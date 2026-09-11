@@ -41,6 +41,11 @@ class GeminiRateLimitException(Exception):
     pass
 
 
+class GeminiContentFilterException(Exception):
+    """Raised when Gemini content or safety filters block output (e.g. Recitation)."""
+    pass
+
+
 def is_rate_limit_error(exception: BaseException) -> bool:
     """Predicate identifying Gemini rate limit (429) or quota exceeded exceptions."""
     if isinstance(exception, GeminiRateLimitException):
@@ -54,10 +59,57 @@ def is_rate_limit_error(exception: BaseException) -> bool:
     )
 
 
+def is_retryable_ai_error(exception: BaseException) -> bool:
+    """Predicate identifying Gemini retryable errors (429 or transient recitation)."""
+    if isinstance(exception, (GeminiRateLimitException, GeminiContentFilterException)):
+        return True
+    err_str = str(exception).lower()
+    return (
+        is_rate_limit_error(exception)
+        or "recitation" in err_str
+        or "finish_reason is 4" in err_str
+        or "copyrighted" in err_str
+    )
+
+
+def extract_response_text(response) -> str:
+    """
+    Safely extract generated text from Gemini API response.
+    Inspects candidate finish_reason to gracefully detect recitation or safety filters.
+    """
+    if not getattr(response, "candidates", None):
+        raise GeminiContentFilterException("Gemini returned no candidate responses.")
+
+    candidate = response.candidates[0]
+    finish_reason = getattr(candidate, "finish_reason", None)
+    finish_name = str(finish_reason)
+
+    if finish_reason == 4 or "RECITATION" in finish_name:
+        raise GeminiContentFilterException(
+            "Gemini recitation filter triggered (the generated text closely matched existing training documents). "
+            "Re-synthesizing with higher entropy and original phrasing..."
+        )
+    if finish_reason == 3 or "SAFETY" in finish_name:
+        raise GeminiContentFilterException("Gemini safety filter triggered.")
+
+    # Extract text from candidate parts if present
+    if hasattr(candidate, "content") and hasattr(candidate.content, "parts") and candidate.content.parts:
+        parts_text = "".join(
+            part.text for part in candidate.content.parts if hasattr(part, "text") and part.text
+        )
+        if parts_text:
+            return parts_text.strip()
+
+    try:
+        return response.text.strip()
+    except Exception as exc:
+        raise GeminiContentFilterException(f"Unable to extract text from response: {exc}")
+
+
 def _log_retry_attempt(retry_state):
-    """Log retry attempts triggered by rate limit exceptions."""
+    """Log retry attempts triggered by rate limit or filter exceptions."""
     logger.warning(
-        f"[Tenacity Retry] Gemini 429 Rate Limit encountered. "
+        f"[Tenacity Retry] Gemini retryable error encountered ({retry_state.outcome.exception()}). "
         f"Retrying attempt {retry_state.attempt_number} of 3 in 10 seconds..."
     )
 
@@ -66,7 +118,7 @@ def _log_retry_attempt(retry_state):
     reraise=True,
     stop=stop_after_attempt(3),
     wait=wait_fixed(10),
-    retry=retry_if_exception(is_rate_limit_error),
+    retry=retry_if_exception(is_retryable_ai_error),
     before_sleep=_log_retry_attempt,
 )
 async def generate_prd_from_brief(brief: str, title: str) -> PRDResponseSchema:
@@ -119,6 +171,7 @@ Guidelines:
 2. Provide 'database_tables' with relational tables and clean column definitions.
 3. Provide 'api_routes' with essential core endpoints.
 4. Provide a clean 'mermaid_diagram' starting with `graph TD`.
+5. Originality: Design unique, original entity schemas and architectures. Do not recite or copy proprietary documentation verbatim.
 Be precise, direct, and avoid redundant filler.
 """
 
@@ -126,7 +179,7 @@ Be precise, direct, and avoid redundant filler.
     generation_config = GenerationConfig(
         response_mime_type="application/json",
         response_schema=PRDResponseSchema,
-        temperature=0.3,
+        temperature=0.7,
         max_output_tokens=8192,
     )
 
@@ -144,7 +197,7 @@ Be precise, direct, and avoid redundant filler.
                 ),
                 timeout=60.0,
             )
-            raw_json_text = response.text.strip()
+            raw_json_text = extract_response_text(response)
 
             # Clean possible markdown fences if present
             if raw_json_text.startswith("```"):
@@ -168,6 +221,8 @@ Be precise, direct, and avoid redundant filler.
     # If the underlying error is a rate limit / quota error, raise GeminiRateLimitException for Tenacity retry
     if is_rate_limit_error(last_error):
         raise GeminiRateLimitException(str(last_error))
+    if isinstance(last_error, GeminiContentFilterException) or "recitation" in str(last_error).lower():
+        raise GeminiContentFilterException(str(last_error))
 
     raise ValueError(f"Gemini AI PRD Generation Error: {str(last_error)}")
 

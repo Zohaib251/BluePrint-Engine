@@ -16,7 +16,11 @@ from database import get_db
 from models import User, PRDHistory
 from schemas import PRDCreate, PRDResponse, ProjectBriefRequest
 from auth import get_current_user
-from ai_service import generate_prd_from_brief, GeminiRateLimitException
+from ai_service import (
+    generate_prd_from_brief,
+    GeminiRateLimitException,
+    GeminiContentFilterException,
+)
 
 router = APIRouter(prefix="/api/prd", tags=["PRD Management"])
 
@@ -68,6 +72,11 @@ async def generate_and_save_prd(
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="AI generation is currently experiencing high demand. Please try again in 1 minute.",
+        )
+    except GeminiContentFilterException:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="AI generation was flagged by Google's originality filter (recitation of copyrighted material). Please rephrase your project brief slightly to use generic terms rather than specific proprietary product names.",
         )
     except ValueError as err:
         err_msg = str(err).lower()
