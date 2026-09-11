@@ -28,6 +28,10 @@ DATABASE_URL = os.getenv(
 if DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 
+# In asyncpg driver, sslmode query parameter must be converted to ssl
+if "sslmode=" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("sslmode=", "ssl=")
+
 # Create asynchronous SQLAlchemy Engine instance
 engine: AsyncEngine = create_async_engine(
     DATABASE_URL,

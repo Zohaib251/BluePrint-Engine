@@ -36,6 +36,8 @@ DATABASE_URL: str = os.getenv(
 )
 if DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+if "sslmode=" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("sslmode=", "ssl=")
 
 # JWT Authentication Security Configuration
 JWT_SECRET_KEY: str = os.getenv(
