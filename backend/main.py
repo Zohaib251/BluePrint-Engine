@@ -2,7 +2,7 @@
 Blueprint Engine API Application.
 
 FastAPI backend service serving core API endpoints, JWT authentication, rate-limiting,
-PRD history CRUD, and background 30-day data pruning tasks.
+PRD history CRUD, admin analytics, and background 30-day data pruning tasks.
 Requires Python 3.10+ and virtual environment execution.
 """
 
@@ -21,6 +21,7 @@ from limiter import limiter
 from pruning import start_pruning_background_loop
 from routers.auth import router as auth_router
 from routers.prd import router as prd_router
+from routers.admin import router as admin_router
 
 # Load environment variables from .env file
 load_dotenv()
@@ -78,6 +79,7 @@ app.add_middleware(
 # Register API Endpoint Routers
 app.include_router(auth_router)
 app.include_router(prd_router)
+app.include_router(admin_router)
 
 
 @app.get("/health", tags=["Health Check"])

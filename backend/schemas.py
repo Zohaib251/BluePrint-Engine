@@ -1,7 +1,7 @@
 """
 Pydantic Data Schemas Module.
 
-Provides request validation models and response serializers for Auth, PRD CRUD, and Gemini AI Structured Outputs.
+Provides request validation models and response serializers for Auth, PRD CRUD, Admin Analytics, and Gemini AI Structured Outputs.
 """
 
 from datetime import datetime
@@ -115,8 +115,6 @@ class APIRouteSchema(BaseModel):
 class PRDResponseSchema(BaseModel):
     """
     Pydantic v2 Structured Output Schema for Gemini PRD Generation.
-
-    Enforces architecture overview, database schema, API routes, and valid Mermaid.js syntax.
     """
 
     title: str = Field(..., description="PRD Document Title")
@@ -132,3 +130,11 @@ class PRDResponseSchema(BaseModel):
     mermaid_diagram: str = Field(
         ..., description="Strictly valid Mermaid.js diagram string (e.g., graph TD or sequenceDiagram)"
     )
+
+
+class AdminAnalyticsResponse(BaseModel):
+    """Platform analytics serializer for Admin Control Center."""
+
+    total_users: int
+    total_prds: int
+    users: List[UserResponse]

@@ -30,6 +30,15 @@ export interface PRDHistory {
 }
 
 /**
+ * Interface defining Admin Platform Analytics Payload.
+ */
+export interface AdminAnalytics {
+  total_users: number;
+  total_prds: number;
+  users: User[];
+}
+
+/**
  * Interface defining Structured PRD Content parsed from JSON.
  */
 export interface PRDStructuredContent {
@@ -43,7 +52,7 @@ export interface PRDStructuredContent {
   api_routes: Array<{
     method: string;
     path: string;
-    summary: str;
+    summary: string;
   }>;
   mermaid_diagram: string;
 }
@@ -84,13 +93,11 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
       const errorJson = await response.json();
       errorDetail = errorJson.detail || errorDetail;
     } catch {
-      // Fallback to response status text
       errorDetail = response.statusText;
     }
     throw new Error(errorDetail);
   }
 
-  // Handle 204 No Content
   if (response.status === 204) {
     return null;
   }
@@ -101,7 +108,7 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
 /**
  * Sign up a new user account.
  */
-export async function signupUser(username: str, password: str) {
+export async function signupUser(username: string, password: str) {
   return fetchWithAuth("/api/auth/signup", {
     method: "POST",
     body: JSON.stringify({ username, password }),
@@ -111,7 +118,7 @@ export async function signupUser(username: str, password: str) {
 /**
  * Sign in user and receive JWT access token.
  */
-export async function signinUser(username: str, password: str) {
+export async function signinUser(username: string, password: str) {
   const res = await fetchWithAuth("/api/auth/signin", {
     method: "POST",
     body: JSON.stringify({ username, password }),
@@ -161,4 +168,18 @@ export async function getPRDById(id: string): Promise<PRDHistory> {
  */
 export async function deletePRDById(id: string): Promise<void> {
   return fetchWithAuth(`/api/prd/${id}`, { method: "DELETE" });
+}
+
+/**
+ * Retrieve platform analytics metrics (Admin only).
+ */
+export async function getAdminAnalytics(): Promise<AdminAnalytics> {
+  return fetchWithAuth("/api/admin/analytics", { method: "GET" });
+}
+
+/**
+ * Manually trigger the 30-day data pruning script (Admin only).
+ */
+export async function triggerManualPruning(): Promise<{ message: string; deleted_count: number }> {
+  return fetchWithAuth("/api/admin/prune", { method: "POST" });
 }
