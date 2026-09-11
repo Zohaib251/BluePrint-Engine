@@ -18,8 +18,9 @@ python -m venv venv
 # Activate Virtual Environment (Linux / macOS):
 # source venv/bin/activate
 
-# Install Python backend dependencies (FastAPI, SQLAlchemy, asyncpg, passlib, bcrypt, PyJWT, SlowAPI, Google Generative AI)
+# Install Python backend dependencies (FastAPI, SQLAlchemy, asyncpg, passlib, bcrypt, PyJWT, SlowAPI, Google Generative AI, Tenacity)
 pip install -r requirements.txt
+pip install tenacity
 
 # Step 3: Set up Frontend Node Dependencies (Next.js, Tailwind CSS, jsPDF, Lucide Icons, Mermaid.js)
 # Folder: f:\Local Work\Blueprint Engine\frontend

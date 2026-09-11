@@ -95,7 +95,9 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
     } catch {
       errorDetail = response.statusText;
     }
-    throw new Error(errorDetail);
+    const error: any = new Error(errorDetail);
+    error.status = response.status;
+    throw error;
   }
 
   if (response.status === 204) {

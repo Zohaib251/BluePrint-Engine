@@ -16,7 +16,7 @@ from database import get_db
 from models import User, PRDHistory
 from schemas import PRDCreate, PRDResponse, ProjectBriefRequest
 from auth import get_current_user
-from ai_service import generate_prd_from_brief
+from ai_service import generate_prd_from_brief, GeminiRateLimitException
 
 router = APIRouter(prefix="/api/prd", tags=["PRD Management"])
 
@@ -64,7 +64,18 @@ async def generate_and_save_prd(
         structured_prd = await generate_prd_from_brief(
             brief=brief_data.brief, title=brief_data.title
         )
+    except GeminiRateLimitException:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="AI generation is currently experiencing high demand. Please try again in 1 minute.",
+        )
     except ValueError as err:
+        err_msg = str(err).lower()
+        if "429" in err_msg or "resourceexhausted" in err_msg or "quota" in err_msg or "rate limit" in err_msg:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="AI generation is currently experiencing high demand. Please try again in 1 minute.",
+            )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(err),

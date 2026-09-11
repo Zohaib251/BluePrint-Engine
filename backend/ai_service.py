@@ -11,6 +11,12 @@ import asyncio
 import google.generativeai as genai
 from google.generativeai.types import GenerationConfig
 from dotenv import load_dotenv
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_fixed,
+    retry_if_exception,
+)
 
 try:
     from schemas import PRDResponseSchema
@@ -30,12 +36,47 @@ if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY, transport="rest")
 
 
+class GeminiRateLimitException(Exception):
+    """Raised when Gemini API encounters a 429 rate limit or quota exhaustion."""
+    pass
+
+
+def is_rate_limit_error(exception: BaseException) -> bool:
+    """Predicate identifying Gemini rate limit (429) or quota exceeded exceptions."""
+    if isinstance(exception, GeminiRateLimitException):
+        return True
+    err_str = str(exception).lower()
+    return (
+        "429" in err_str
+        or "resourceexhausted" in err_str
+        or "quota" in err_str
+        or "rate limit" in err_str
+    )
+
+
+def _log_retry_attempt(retry_state):
+    """Log retry attempts triggered by rate limit exceptions."""
+    logger.warning(
+        f"[Tenacity Retry] Gemini 429 Rate Limit encountered. "
+        f"Retrying attempt {retry_state.attempt_number} of 3 in 10 seconds..."
+    )
+
+
+@retry(
+    reraise=True,
+    stop=stop_after_attempt(3),
+    wait=wait_fixed(10),
+    retry=retry_if_exception(is_rate_limit_error),
+    before_sleep=_log_retry_attempt,
+)
 async def generate_prd_from_brief(brief: str, title: str) -> PRDResponseSchema:
     """
     Generate a structured PRD using Google Gemini flash models.
 
-    Enforces strictly valid JSON output matching PRDResponseSchema via
-    response_mime_type="application/json".
+    Wrapped with Tenacity @retry decorator:
+    - Retries up to 3 times on 429 Rate Limit / Quota Exceeded exceptions
+    - Waits 10 seconds between retry attempts
+    - Reraises GeminiRateLimitException if all 3 retries fail
 
     Args:
         brief (str): The functional project brief description.
@@ -46,6 +87,7 @@ async def generate_prd_from_brief(brief: str, title: str) -> PRDResponseSchema:
                            database tables, API routes, and Mermaid diagram.
 
     Raises:
+        GeminiRateLimitException: If 429 rate limit persists after 3 retries.
         ValueError: If GEMINI_API_KEY is missing or model response is invalid.
     """
     api_key = os.getenv("GEMINI_API_KEY")
@@ -111,13 +153,11 @@ Requirements:
             last_error = err
 
     logger.error(f"Failed to generate structured PRD via Gemini candidate models: {last_error}")
-    error_msg = str(last_error)
-    if "429" in error_msg or "ResourceExhausted" in error_msg or "quota" in error_msg.lower():
-        raise ValueError(
-            "Google Gemini API Rate Limit / Quota Exceeded (429). "
-            "The free-tier quota was reached or requests were sent too quickly. "
-            "Please wait about 30-60 seconds before trying again, or add a paid Gemini API key with billing enabled."
-        )
-    raise ValueError(f"Gemini AI PRD Generation Error: {error_msg}")
+    
+    # If the underlying error is a rate limit / quota error, raise GeminiRateLimitException for Tenacity retry
+    if is_rate_limit_error(last_error):
+        raise GeminiRateLimitException(str(last_error))
+
+    raise ValueError(f"Gemini AI PRD Generation Error: {str(last_error)}")
 
 

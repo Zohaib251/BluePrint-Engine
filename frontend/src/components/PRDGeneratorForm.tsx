@@ -64,7 +64,14 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
       setProjectIdea("");
       setTechStack("");
     } catch (err: any) {
-      setError(err.message || "Failed to generate PRD blueprint. Please try again.");
+      if (err.status === 429) {
+        setError(
+          err.message ||
+            "AI generation is currently experiencing high demand. Please try again in 1 minute."
+        );
+      } else {
+        setError(err.message || "Failed to generate PRD blueprint. Please try again.");
+      }
     } finally {
       setIsGenerating(false);
     }
@@ -78,14 +85,21 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
           <span>New Architecture Blueprint</span>
         </h2>
         <span className="text-[11px] font-mono bg-gray-800 text-gray-300 px-2.5 py-1 rounded border border-gray-700">
-          GEMINI 1.5 FLASH
+          GEMINI FLASH
         </span>
       </div>
 
       {error && (
-        <div className="bg-gray-950 border border-gray-800 text-gray-200 text-xs p-3.5 rounded-lg flex items-start space-x-2.5">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
-          <span>{error}</span>
+        <div className="bg-rose-950/40 border-2 border-rose-600/80 text-rose-100 p-4 rounded-xl flex items-start space-x-3.5 shadow-xl ring-1 ring-rose-500/30 transition-all">
+          <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <h4 className="text-xs font-bold text-rose-300 tracking-wider uppercase">
+              Rate Limit / High Demand Notice
+            </h4>
+            <p className="text-sm font-medium leading-relaxed text-rose-100">
+              {error}
+            </p>
+          </div>
         </div>
       )}
 
