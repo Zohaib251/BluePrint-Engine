@@ -21,6 +21,6 @@ python -m venv venv
 # Install Python backend dependencies (FastAPI, SQLAlchemy, asyncpg, passlib, bcrypt, PyJWT, SlowAPI, Google Generative AI)
 pip install -r requirements.txt
 
-# Step 3: Set up Frontend Node Dependencies & Tailwind CSS
+# Step 3: Set up Frontend Node Dependencies (Next.js, Tailwind CSS, jsPDF, Lucide Icons)
 # Folder: f:\Local Work\Blueprint Engine\frontend
 npm install

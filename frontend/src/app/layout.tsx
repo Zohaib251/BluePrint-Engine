@@ -5,6 +5,7 @@ import Script from "next/script";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CookieConsent from "@/components/CookieConsent";
+import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
 // Configure Poppins font from Google Fonts with variable support
@@ -77,12 +78,14 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="bg-gray-950 text-gray-100 font-poppins min-h-screen flex flex-col antialiased">
-        <Navbar />
-        <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {children}
-        </div>
-        <CookieConsent />
-        <Footer />
+        <AuthProvider>
+          <Navbar />
+          <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {children}
+          </div>
+          <CookieConsent />
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

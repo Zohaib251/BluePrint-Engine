@@ -2,12 +2,15 @@
 
 import React from "react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 /**
  * Navbar component for global application navigation.
- * Renders brand logo and top navigation links in high-contrast grayscale style.
+ * Renders brand logo, user state, and navigation links.
  */
 export default function Navbar() {
+  const { user, isAdmin, logout } = useAuth();
+
   return (
     <header className="w-full border-b border-gray-800 bg-gray-950/80 backdrop-blur-md sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -24,29 +27,54 @@ export default function Navbar() {
         {/* Header Links */}
         <nav className="flex items-center space-x-6">
           <Link
-            href="/"
+            href="/dashboard"
             className="text-sm font-medium text-gray-300 hover:text-gray-100 transition-colors"
           >
             Dashboard
           </Link>
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="text-xs font-mono px-2.5 py-1 rounded bg-gray-800 text-gray-200 border border-gray-700 hover:bg-gray-700 transition-colors"
+            >
+              Admin Panel
+            </Link>
+          )}
           <Link
             href="/privacy"
-            className="text-sm font-medium text-gray-400 hover:text-gray-100 transition-colors"
+            className="text-sm font-medium text-gray-400 hover:text-gray-100 transition-colors hidden sm:inline"
           >
             Privacy
           </Link>
-          <Link
-            href="/terms"
-            className="text-sm font-medium text-gray-400 hover:text-gray-100 transition-colors"
-          >
-            Terms
-          </Link>
-          <Link
-            href="/"
-            className="text-xs font-semibold px-4 py-2 rounded-md bg-gray-100 text-gray-950 hover:bg-gray-300 transition-colors"
-          >
-            Get Started
-          </Link>
+
+          {user ? (
+            <div className="flex items-center space-x-3">
+              <span className="text-xs font-medium text-gray-400">
+                {user.username} {isAdmin && "(Admin)"}
+              </span>
+              <button
+                onClick={logout}
+                className="text-xs font-semibold px-3 py-1.5 rounded-md bg-gray-900 border border-gray-800 text-gray-300 hover:bg-gray-800 hover:text-gray-100 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-3">
+              <Link
+                href="/signin"
+                className="text-xs font-semibold px-3.5 py-1.5 rounded-md text-gray-300 hover:text-gray-100 transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/signup"
+                className="text-xs font-semibold px-4 py-2 rounded-md bg-gray-100 text-gray-950 hover:bg-gray-300 transition-colors"
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
         </nav>
       </div>
     </header>
