@@ -100,10 +100,10 @@ async def generate_prd_from_brief(brief: str, title: str) -> PRDResponseSchema:
     # Ensure SDK is configured with active API key and reliable REST transport
     genai.configure(api_key=api_key, transport="rest")
 
-    # Candidate models list in priority order (prefer models with higher free-tier quotas and fast response)
-    configured_model = os.getenv("GEMINI_MODEL")
+    # Candidate models list in priority order (strictly use flash-lite models with high free-tier quotas)
+    configured_model = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
     candidate_models = [configured_model] if configured_model else []
-    for m in ["gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-3.6-flash", "gemini-flash-latest"]:
+    for m in ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.5-flash"]:
         if m not in candidate_models:
             candidate_models.append(m)
 
