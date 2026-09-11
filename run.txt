@@ -1,2 +1,77 @@
-uvicorn main:app --reload --port 8000
-npm run dev
+==============================================================================
+                    BLUEPRINT ENGINE - HOW TO RUN PROJECT
+==============================================================================
+
+[ PREREQUISITES / Requirements ]
+- Python 3.10+
+- Node.js 18+ & npm
+- PostgreSQL / Neon.tech Database URL
+- Google Gemini API Key
+
+------------------------------------------------------------------------------
+STEP 1: Backend Setup & Execution (Terminal 1)
+------------------------------------------------------------------------------
+1. Terminal 1 kholein aur backend directory mein jayein:
+   cd backend
+
+2. Virtual Environment create & activate karein:
+   - Windows (PowerShell / CMD):
+     python -m venv venv
+     .\venv\Scripts\activate
+
+   - Linux / macOS:
+     python3 -m venv venv
+     source venv/bin/activate
+
+3. Dependencies install karein:
+   pip install -r requirements.txt
+
+4. `.env` file set up karein:
+   - `.env.example` ko copy karke `.env` banayein:
+     copy .env.example .env  (Windows)  OR  cp .env.example .env  (Linux/macOS)
+   - `.env` file mein apne credentials enter karein:
+     - DATABASE_URL (PostgreSQL / Neon.tech asyncpg connection string)
+     - GEMINI_API_KEY (Google AI Studio API Key)
+     - JWT_SECRET_KEY
+
+5. Database Tables initialize karein:
+   python init_db.py
+
+6. FastAPI Backend Server start karein:
+   uvicorn main:app --reload --port 8000
+
+   => Backend URL: http://localhost:8000
+   => Interactive API Docs (Swagger): http://localhost:8000/docs
+
+------------------------------------------------------------------------------
+STEP 2: Frontend Setup & Execution (Terminal 2)
+------------------------------------------------------------------------------
+1. Ek naya Terminal 2 kholein aur frontend directory mein jayein:
+   cd frontend
+
+2. Node packages install karein:
+   npm install
+
+3. Environment File (`.env.local`) set up karein:
+   - `.env.example` ko copy karke `.env.local` banayein:
+     copy .env.example .env.local  (Windows)  OR  cp .env.example .env.local  (Linux/macOS)
+   - Ensure setting:
+     NEXT_PUBLIC_API_URL=http://localhost:8000
+
+4. Next.js Frontend Server start karein:
+   npm run dev
+
+   => Frontend URL: http://localhost:3000
+
+------------------------------------------------------------------------------
+QUICK RUN COMMANDS (Agar setup pehle se done hai):
+------------------------------------------------------------------------------
+Terminal 1 (Backend):
+  cd backend
+  .\venv\Scripts\activate
+  uvicorn main:app --reload --port 8000
+
+Terminal 2 (Frontend):
+  cd frontend
+  npm run dev
+==============================================================================
