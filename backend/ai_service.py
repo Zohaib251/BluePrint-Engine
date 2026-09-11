@@ -103,7 +103,7 @@ async def generate_prd_from_brief(brief: str, title: str) -> PRDResponseSchema:
     # Candidate models list in priority order (strictly use lightest flash-lite models)
     configured_model = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
     candidate_models = [configured_model] if configured_model else []
-    for m in ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]:
+    for m in ["gemini-3.5-flash-lite", "gemini-3.5-flash"]:
         if m not in candidate_models:
             candidate_models.append(m)
 
@@ -116,18 +116,18 @@ Brief: {brief}
 
 Guidelines:
 1. Provide a concise 'architecture_overview' (2-3 focused paragraphs).
-2. Provide 'database_tables' limited to 3-4 essential relational tables with clean column definitions.
-3. Provide 'api_routes' limited to 5-8 essential core endpoints.
+2. Provide 'database_tables' with relational tables and clean column definitions.
+3. Provide 'api_routes' with essential core endpoints.
 4. Provide a clean 'mermaid_diagram' starting with `graph TD`.
 Be precise, direct, and avoid redundant filler.
 """
 
-    # Enforce application/json response MIME type, Pydantic schema structure, and strict token limits
+    # Enforce application/json response MIME type, Pydantic schema structure, and generous token limits to avoid truncation
     generation_config = GenerationConfig(
         response_mime_type="application/json",
         response_schema=PRDResponseSchema,
-        temperature=0.2,
-        max_output_tokens=2048,
+        temperature=0.3,
+        max_output_tokens=8192,
     )
 
     last_error = None
@@ -144,7 +144,16 @@ Be precise, direct, and avoid redundant filler.
                 ),
                 timeout=60.0,
             )
-            raw_json_text = response.text
+            raw_json_text = response.text.strip()
+
+            # Clean possible markdown fences if present
+            if raw_json_text.startswith("```"):
+                lines = raw_json_text.splitlines()
+                if lines and lines[0].startswith("```"):
+                    lines = lines[1:]
+                if lines and lines[-1].startswith("```"):
+                    lines = lines[:-1]
+                raw_json_text = "\n".join(lines).strip()
 
             # Validate JSON against Pydantic PRDResponseSchema model
             parsed_data = json.loads(raw_json_text)

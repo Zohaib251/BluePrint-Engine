@@ -93,7 +93,9 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
           <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
           <div className="space-y-1">
             <h4 className="text-xs font-bold text-rose-300 tracking-wider uppercase">
-              Rate Limit / High Demand Notice
+              {error.includes("high demand") || error.includes("Rate Limit")
+                ? "Rate Limit / High Demand Notice"
+                : "Generation Error"}
             </h4>
             <p className="text-sm font-medium leading-relaxed text-rose-100">
               {error}
