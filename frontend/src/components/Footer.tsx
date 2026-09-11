@@ -30,9 +30,14 @@ export default function Footer() {
         </div>
 
         {/* Developer Watermark */}
-        <div className="text-xs font-mono text-gray-500 bg-gray-900 px-3 py-1.5 rounded-full border border-gray-800">
-          Engineered with <span className="text-gray-200 font-semibold">Blueprint Engine</span>
-        </div>
+        <a
+          href="https://github.com/Zohaib251"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs font-mono text-gray-500 bg-gray-900 px-3 py-1.5 rounded-full border border-gray-800 hover:border-gray-700 hover:text-gray-300 transition-all cursor-pointer inline-flex items-center group"
+        >
+          Engineered with <span className="text-gray-200 font-semibold group-hover:text-white transition-colors ml-1">Blueprint Engine</span>
+        </a>
       </div>
     </footer>
   );
