@@ -4,71 +4,111 @@
 
 @layer base {
   :root {
-    --font-poppins: 'Poppins', sans-serif;
-
-    /* Tweakcn "Claude Blu 2" (Registry: cmmea3qbd000004jvb99v39cd) - LIGHT MODE */
-    --background: 0 0% 95%;              /* oklch(0.9581 0 0) #f1f1f1 - soft subtle off-white */
-    --foreground: 213 20% 20%;           /* oklch(0.3134 0.0234 253.6270) #29323d - deep slate charcoal */
-
-    --card: 204 33% 97%;                /* oklch(0.9774 0.0042 236.4961) #f5f8fa - soft elevated cloud */
-    --card-foreground: 132 12% 8%;       /* oklch(0.2022 0.0110 151.1628) */
-
-    --popover: 0 0% 100%;               /* oklch(1.0000 0 0) */
-    --popover-foreground: 203 19% 13%;   /* oklch(0.2505 0.0149 235.6259) */
-
-    --primary: 209 56% 52%;             /* oklch(0.6112 0.1217 248.9572) #4288c9 - signature Claude Blue */
+    --background: 0 0% 94.5098%;
+    --foreground: 213.0000 19.6078% 20%;
+    --card: 204 33.3333% 97.0588%;
+    --card-foreground: 132 11.6279% 8.4314%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 203.0769 19.4030% 13.1373%;
+    --primary: 208.8889 55.5556% 52.3529%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 208 23% 89%;           /* oklch(0.9122 0.0111 243.6627) #dce3e9 */
-    --secondary-foreground: 203 8% 30%; /* oklch(0.4186 0.0133 235.1330) */
-
-    --muted: 208 29% 90%;               /* oklch(0.9209 0.0128 244.2626) */
-    --muted-foreground: 190 2% 50%;     /* oklch(0.6027 0.0062 211.0375) #7d8283 */
-
-    --accent: 208 23% 89%;              /* oklch(0.9122 0.0111 243.6627) */
-    --accent-foreground: 203 19% 13%;
-
-    --destructive: 0 84% 60%;
+    --secondary: 207.6923 22.8070% 88.8235%;
+    --secondary-foreground: 203.0769 8.4967% 30.0000%;
+    --muted: 208 29.4118% 90%;
+    --muted-foreground: 190.0000 2.3622% 50.1961%;
+    --accent: 207.6923 22.8070% 88.8235%;
+    --accent-foreground: 203.0769 19.4030% 13.1373%;
+    --destructive: 150 5% 7.8431%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 189 9% 85%;              /* oklch(0.8840 0.0067 208.7806) #d4dadb */
-    --input: 212 8% 68%;               /* oklch(0.7450 0.0121 252.1201) */
-    --ring: 209 56% 52%;
-
+    --border: 188.5714 8.8608% 84.5098%;
+    --input: 212.3077 7.9755% 68.0392%;
+    --ring: 208.8889 55.5556% 52.3529%;
+    --chart-1: 215.1563 57.1429% 43.9216%;
+    --chart-2: 222.5455 84.6154% 74.5098%;
+    --chart-3: 210 20.4082% 80.7843%;
+    --chart-4: 217.2414 49.1525% 88.4314%;
+    --chart-5: 219.5556 60% 44.1176%;
+    --sidebar: 205.7143 25.9259% 94.7059%;
+    --sidebar-foreground: 180 2.5210% 23.3333%;
+    --sidebar-primary: 208.8889 55.5556% 52.3529%;
+    --sidebar-primary-foreground: 0 0% 98.4314%;
+    --sidebar-accent: 207.6923 22.8070% 88.8235%;
+    --sidebar-accent-foreground: 0 0% 20.3922%;
+    --sidebar-border: 0 0% 92.1569%;
+    --sidebar-ring: 0 0% 70.9804%;
+    --font-sans: var(--font-poppins), 'Inter', sans-serif;
+    --font-serif: Georgia, serif;
+    --font-mono: monospace;
     --radius: 0.5rem;
+    --shadow-x: 0px;
+    --shadow-y: 2px;
+    --shadow-blur: 4px;
+    --shadow-spread: 0px;
+    --shadow-opacity: 0.1;
+    --shadow-color: #000000;
+    --shadow-2xs: 0px 2px 4px 0px hsl(0 0% 0% / 0.05);
+    --shadow-xs: 0px 2px 4px 0px hsl(0 0% 0% / 0.05);
+    --shadow-sm: 0px 2px 4px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow: 0px 2px 4px 0px hsl(0 0% 0% / 0.10), 0px 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow-md: 0px 2px 4px 0px hsl(0 0% 0% / 0.10), 0px 2px 4px -1px hsl(0 0% 0% / 0.10);
+    --shadow-lg: 0px 2px 4px 0px hsl(0 0% 0% / 0.10), 0px 4px 6px -1px hsl(0 0% 0% / 0.10);
+    --shadow-xl: 0px 2px 4px 0px hsl(0 0% 0% / 0.10), 0px 8px 10px -1px hsl(0 0% 0% / 0.10);
+    --shadow-2xl: 0px 2px 4px 0px hsl(0 0% 0% / 0.25);
+    --tracking-normal: -0.01em;
+    --spacing: 0.25rem;
   }
 
   .dark {
-    /* Tweakcn "Claude Blu 2" (Registry: cmmea3qbd000004jvb99v39cd) - DARK MODE */
-    --background: 0 0% 7%;              /* oklch(0.1776 0 0) #111111 - soft neutral off-black */
-    --foreground: 217 10% 74%;          /* oklch(0.7905 0.0126 259.8241) #b6bbc3 */
-
-    --card: 210 3% 15%;                 /* oklch(0.2638 0.0024 247.9155) #242526 - elevated graphite */
-    --card-foreground: 216 33% 97%;      /* oklch(0.9755 0.0045 258.3245) #f5f7fa */
-
-    --popover: 210 2% 18%;              /* oklch(0.3046 0.0023 247.9001) */
-    --popover-foreground: 200 5% 89%;   /* oklch(0.9176 0.0026 228.7865) */
-
-    --primary: 211 63% 60%;            /* oklch(0.6576 0.1208 252.0832) #5795d9 - vibrant Claude Blue */
+    --background: 0 0% 6.6667%;
+    --foreground: 216.9231 9.7744% 73.9216%;
+    --card: 210.0000 2.7027% 14.5098%;
+    --card-foreground: 216 33.3333% 97.0588%;
+    --popover: 210.0000 2.1277% 18.4314%;
+    --popover-foreground: 200.0000 5.4545% 89.2157%;
+    --primary: 211.3846 63.1068% 59.6078%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 204 33% 97%;          /* oklch(0.9774 0.0042 236.4961) */
-    --secondary-foreground: 210 2% 18%;
-
-    --muted: 210 4% 10%;               /* oklch(0.2171 0.0025 247.9411) */
-    --muted-foreground: 206 9% 69%;    /* oklch(0.7559 0.0125 239.9659) #a9b1b7 */
-
-    --accent: 216 11% 9%;              /* oklch(0.2038 0.0067 258.3676) */
-    --accent-foreground: 206 26% 95%;
-
-    --destructive: 0 84% 60%;
+    --secondary: 204 33.3333% 97.0588%;
+    --secondary-foreground: 210.0000 2.1277% 18.4314%;
+    --muted: 210 3.8462% 10.1961%;
+    --muted-foreground: 205.7143 8.8608% 69.0196%;
+    --accent: 216 10.6383% 9.2157%;
+    --accent-foreground: 205.7143 25.9259% 94.7059%;
+    --destructive: 0 84.2365% 60.1961%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 210 5% 23%;              /* oklch(0.3506 0.0066 248.0169) #383b3e */
-    --input: 210 5% 31%;               /* oklch(0.4217 0.0084 248.0280) */
-    --ring: 211 63% 60%;
-
+    --border: 210.0000 5.0847% 23.1373%;
+    --input: 210 5.1282% 30.5882%;
+    --ring: 211.3846 63.1068% 59.6078%;
+    --chart-1: 215.1563 57.1429% 43.9216%;
+    --chart-2: 222.5455 84.6154% 74.5098%;
+    --chart-3: 216 10.6383% 9.2157%;
+    --chart-4: 213.1034 25.2174% 22.5490%;
+    --chart-5: 219.5556 60% 44.1176%;
+    --sidebar: 210 3.3333% 11.7647%;
+    --sidebar-foreground: 216.9231 9.7744% 73.9216%;
+    --sidebar-primary: 0 0% 20.3922%;
+    --sidebar-primary-foreground: 0 0% 98.4314%;
+    --sidebar-accent: 180 3.4483% 5.6863%;
+    --sidebar-accent-foreground: 216.9231 9.7744% 73.9216%;
+    --sidebar-border: 0 0% 92.1569%;
+    --sidebar-ring: 0 0% 70.9804%;
+    --font-sans: var(--font-poppins), 'Inter', sans-serif;
+    --font-serif: Georgia, serif;
+    --font-mono: monospace;
     --radius: 0.5rem;
+    --shadow-x: 0px;
+    --shadow-y: 4px;
+    --shadow-blur: 8px;
+    --shadow-spread: 0px;
+    --shadow-opacity: 0.3;
+    --shadow-color: #000000;
+    --shadow-2xs: 0px 4px 8px 0px hsl(0 0% 0% / 0.15);
+    --shadow-xs: 0px 4px 8px 0px hsl(0 0% 0% / 0.15);
+    --shadow-sm: 0px 4px 8px 0px hsl(0 0% 0% / 0.30), 0px 1px 2px -1px hsl(0 0% 0% / 0.30);
+    --shadow: 0px 4px 8px 0px hsl(0 0% 0% / 0.30), 0px 1px 2px -1px hsl(0 0% 0% / 0.30);
+    --shadow-md: 0px 4px 8px 0px hsl(0 0% 0% / 0.30), 0px 2px 4px -1px hsl(0 0% 0% / 0.30);
+    --shadow-lg: 0px 4px 8px 0px hsl(0 0% 0% / 0.30), 0px 4px 6px -1px hsl(0 0% 0% / 0.30);
+    --shadow-xl: 0px 4px 8px 0px hsl(0 0% 0% / 0.30), 0px 8px 10px -1px hsl(0 0% 0% / 0.30);
+    --shadow-2xl: 0px 4px 8px 0px hsl(0 0% 0% / 0.75);
   }
 
   * {
@@ -76,7 +116,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-poppins antialiased min-h-screen flex flex-col selection:bg-primary/25 selection:text-primary;
+    @apply bg-background text-foreground antialiased min-h-screen flex flex-col selection:bg-primary/25 selection:text-primary;
   }
 }
 
@@ -84,8 +124,8 @@
 .bg-blueprint-grid {
   background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, hsl(var(--foreground) / 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, hsl(var(--foreground) / 0.06) 1px, transparent 1px);
+    linear-gradient(to right, hsl(var(--foreground) / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--foreground) / 0.05) 1px, transparent 1px);
 }
 
 .bg-blueprint-dots {
