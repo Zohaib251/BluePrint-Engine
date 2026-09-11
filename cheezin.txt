@@ -2,27 +2,38 @@
 CHEEZIN DEPENDENCY TRACKER & API SETUP INSTRUCTIONS
 ==============================================================================
 
-[SUPABASE POSTGRESQL DATABASE SETUP]
+[NEON.TECH POSTGRESQL DATABASE SETUP]
 ------------------------------------------------------------------------------
-Step 1: Create a Supabase Account & Project
-  1. Go to https://supabase.com and sign in or create an account.
-  2. Click "New Project" and enter project details (Name, Database Password, Region).
-  3. Save your Database Password securely.
+Step 1: Create a Free Neon.tech Account & Project
+  1. Navigate to https://neon.tech and sign up or log in.
+  2. Click "Create Project".
+  3. Enter project details:
+     - Project Name: Blueprint-Engine-DB
+     - Database Name: neondb
+     - Region: Select nearest AWS region
+  4. Click "Create Project".
 
-Step 2: Retrieve PostgreSQL Connection URI
-  1. Navigate to Project Settings -> Database.
-  2. Scroll down to "Connection Strings" section.
-  3. Select the "URI" tab.
-  4. Copy the connection string. It will look like:
-     postgresql://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres
+Step 2: Obtain PostgreSQL Connection String
+  1. In the Neon Console Dashboard, locate the "Connection Details" widget.
+  2. Ensure "Pooled connection" or "Direct connection" is selected.
+  3. Copy the standard Postgres connection string. It will look like:
+     postgres://alex:AbC123dEf@ep-cool-darkness-123456.us-east-2.aws.neon.tech/neondb?sslmode=require
 
 Step 3: Format URI for SQLAlchemy Async (asyncpg driver)
-  1. Update the scheme from "postgresql://" to "postgresql+asyncpg://".
-  2. Replace [YOUR-PASSWORD] with your actual database password.
-  3. Example formatted string:
-     postgresql+asyncpg://postgres.ref:password@aws-0-region.pooler.supabase.com:6543/postgres
+  1. Replace the prefix "postgres://" or "postgresql://" with "postgresql+asyncpg://".
+  2. Ensure "?sslmode=require" is present for Neon cloud SSL requirements.
+  3. Formatted connection string example:
+     postgresql+asyncpg://alex:AbC123dEf@ep-cool-darkness-123456.us-east-2.aws.neon.tech/neondb?sslmode=require
 
 Step 4: Update Backend Environment File
   1. Open backend/.env (create from backend/.env.example if missing).
-  2. Add/Update the DATABASE_URL key:
-     DATABASE_URL=postgresql+asyncpg://postgres.ref:password@aws-0-region.pooler.supabase.com:6543/postgres
+  2. Update the DATABASE_URL variable:
+     DATABASE_URL=postgresql+asyncpg://alex:AbC123dEf@ep-cool-darkness-123456.us-east-2.aws.neon.tech/neondb?sslmode=require
+
+------------------------------------------------------------------------------
+[JWT AUTHENTICATION ENVIRONMENT KEYS]
+------------------------------------------------------------------------------
+Add the following keys to backend/.env for JWT security:
+  JWT_SECRET_KEY=your_generated_secure_32_character_secret_key_here
+  JWT_ALGORITHM=HS256
+  ACCESS_TOKEN_EXPIRE_MINUTES=60
