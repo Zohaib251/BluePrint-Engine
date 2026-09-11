@@ -78,7 +78,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className="bg-gray-950 text-gray-100 font-poppins min-h-screen flex flex-col antialiased">
+      <body className="bg-background text-foreground font-poppins min-h-screen flex flex-col antialiased selection:bg-primary/25 selection:text-primary">
         <SecurityProvider>
           <AuthProvider>
             <Navbar />

@@ -65,16 +65,16 @@ export default function MermaidRenderer({ chart }: MermaidRendererProps) {
   if (renderError) {
     return (
       <div className="space-y-2">
-        <div className="p-3 bg-gray-950 border border-gray-800 rounded-lg text-xs font-mono text-gray-400">
+        <div className="p-3 bg-background/80 border border-border rounded-lg text-xs font-mono text-muted-foreground">
           <p className="text-rose-400 font-semibold mb-1">Visual Diagram Fallback</p>
-          <pre className="overflow-x-auto text-gray-300"><code>{chart}</code></pre>
+          <pre className="overflow-x-auto text-foreground/80"><code>{chart}</code></pre>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-gray-950 p-4 rounded-lg border border-gray-800 overflow-x-auto flex justify-center items-center">
+    <div className="w-full bg-background/80 p-4 rounded-lg border border-border overflow-x-auto flex justify-center items-center">
       <div
         ref={containerRef}
         className="mermaid-svg-container max-w-full"

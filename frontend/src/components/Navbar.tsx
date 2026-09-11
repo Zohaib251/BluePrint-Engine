@@ -33,7 +33,7 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="w-full border-b border-white/[0.07] bg-background/80 backdrop-blur-xl sticky top-0 z-40 transition-all">
+    <header className="w-full border-b border-border/80 bg-background/80 backdrop-blur-xl sticky top-0 z-40 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
         {/* Brand Logo Block */}
