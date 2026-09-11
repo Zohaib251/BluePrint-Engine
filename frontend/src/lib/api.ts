@@ -38,23 +38,106 @@ export interface AdminAnalytics {
   users: User[];
 }
 
+export interface ScopeMatrixItem {
+  feature: string;
+  scope: string;
+  priority: string;
+  details: string;
+}
+
+export interface UserStoryItem {
+  user_type: string;
+  action: string;
+  value: string;
+  acceptance_criteria: string[];
+}
+
+export interface Module1PRD {
+  executive_summary: string;
+  scope_matrix: ScopeMatrixItem[];
+  user_stories: UserStoryItem[];
+}
+
+export interface Module2Infrastructure {
+  hosting_architecture: string;
+  hosting_rationale: string;
+  caching_cdn_strategy: string;
+  availability_and_safety: string;
+}
+
+export interface CostEstimateItem {
+  category: string;
+  service_or_tool: string;
+  estimated_monthly_cost: string;
+}
+
+export interface Module3TechStack {
+  frontend_technology: string;
+  backend_technology: string;
+  database_technology: string;
+  third_party_tools: string;
+  cost_table: CostEstimateItem[];
+  total_monthly_estimate: string;
+}
+
+export interface SitemapRouteItem {
+  page_name: string;
+  route_path: string;
+  access_level: string;
+  key_components: string;
+}
+
+export interface DatabaseTableColumn {
+  name: string;
+  type: string;
+  constraints: string;
+}
+
+export interface DatabaseTableSchema {
+  table_name: string;
+  description: string;
+  columns: DatabaseTableColumn[];
+}
+
+export interface APIRouteSchema {
+  method: string;
+  path: string;
+  summary: string;
+}
+
+export interface Module4DataArchitecture {
+  sitemap_tree: SitemapRouteItem[];
+  database_tables: DatabaseTableSchema[];
+  api_routes: APIRouteSchema[];
+  mermaid_diagram: string;
+}
+
+export interface MilestonePhase {
+  phase_number: number;
+  phase_name: string;
+  execution_tasks: string[];
+}
+
+export interface Module5Runbook {
+  milestones: MilestonePhase[];
+}
+
 /**
- * Interface defining Structured PRD Content parsed from JSON.
+ * Interface defining Master Blueprint Structured Content parsed from JSON.
  */
 export interface PRDStructuredContent {
   title: string;
-  architecture_overview: string;
-  database_tables: Array<{
-    table_name: string;
-    description: string;
-    columns: Array<{ name: string; type: string; constraints: string }>;
-  }>;
-  api_routes: Array<{
-    method: string;
-    path: string;
-    summary: string;
-  }>;
-  mermaid_diagram: string;
+  module_1_prd?: Module1PRD;
+  module_2_infrastructure?: Module2Infrastructure;
+  module_3_tech_stack?: Module3TechStack;
+  module_4_data_architecture?: Module4DataArchitecture;
+  module_5_runbook?: Module5Runbook;
+
+  // Legacy fallback fields
+  architecture_overview?: string;
+  database_tables?: DatabaseTableSchema[];
+  api_routes?: APIRouteSchema[];
+  mermaid_diagram?: string;
 }
 
 /**
@@ -139,15 +222,22 @@ export async function getCurrentUser(): Promise<User> {
 }
 
 /**
- * Generate a new PRD using Gemini 1.5 Flash AI.
+ * Generate a new Master Blueprint using Gemini AI.
  */
 export async function generatePRD(
   title: string,
-  brief: string
+  brief: string,
+  price_range?: string,
+  traffic_range?: string
 ): Promise<PRDHistory> {
   return fetchWithAuth("/api/prd/generate", {
     method: "POST",
-    body: JSON.stringify({ title, brief }),
+    body: JSON.stringify({
+      title,
+      brief,
+      price_range: price_range || "Low / Bootstrap ($0 - $50/mo)",
+      traffic_range: traffic_range || "MVP / Growth (< 10,000 MAU)",
+    }),
   });
 }
 

@@ -64,9 +64,12 @@ async def generate_and_save_prd(
             )
 
     try:
-        # Invoke Gemini AI Service to generate structured PRD schema
+        # Invoke Gemini AI Service to generate structured Master Blueprint schema
         structured_prd = await generate_prd_from_brief(
-            brief=brief_data.brief, title=brief_data.title
+            brief=brief_data.brief,
+            title=brief_data.title,
+            price_range=brief_data.price_range or "Low / Bootstrap ($0 - $50/mo)",
+            traffic_range=brief_data.traffic_range or "MVP / Growth (< 10,000 MAU)",
         )
     except GeminiRateLimitException:
         raise HTTPException(

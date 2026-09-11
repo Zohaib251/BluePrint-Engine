@@ -9,6 +9,9 @@ import json
 import logging
 import asyncio
 import google.generativeai as genai
+import google.generativeai.types.content_types as ct
+import google.generativeai.types.generation_types as gt
+from google.ai.generativelanguage_v1beta.types import content as protos
 from google.generativeai.types import GenerationConfig
 from dotenv import load_dotenv
 from tenacity import (
@@ -19,9 +22,30 @@ from tenacity import (
 )
 
 try:
-    from schemas import PRDResponseSchema
+    from schemas import PRDResponseSchema, GeminiBlueprintSchema
 except ImportError:
-    from backend.schemas import PRDResponseSchema
+    from backend.schemas import PRDResponseSchema, GeminiBlueprintSchema
+
+
+def _build_strict_proto_schema(schema_class):
+    """
+    Convert a Pydantic schema class to a protos.Schema ensuring all properties
+    are explicitly marked as required so Gemini does not truncate output.
+    """
+    def fix_schema_required(schema_dict: dict):
+        if "properties" in schema_dict and isinstance(schema_dict["properties"], dict):
+            if not schema_dict.get("required"):
+                schema_dict["required"] = list(schema_dict["properties"].keys())
+            for prop in schema_dict["properties"].values():
+                if isinstance(prop, dict):
+                    fix_schema_required(prop)
+        if "items" in schema_dict and isinstance(schema_dict["items"], dict):
+            fix_schema_required(schema_dict["items"])
+
+    raw_schema = ct._schema_for_class(schema_class)
+    fix_schema_required(raw_schema)
+    raw_schema = gt._rename_schema_fields(raw_schema)
+    return protos.Schema(raw_schema)
 
 # Load environment variables
 dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
@@ -121,9 +145,14 @@ def _log_retry_attempt(retry_state):
     retry=retry_if_exception(is_retryable_ai_error),
     before_sleep=_log_retry_attempt,
 )
-async def generate_prd_from_brief(brief: str, title: str) -> PRDResponseSchema:
+async def generate_prd_from_brief(
+    brief: str,
+    title: str,
+    price_range: str = "Low / Bootstrap ($0 - $50/mo)",
+    traffic_range: str = "MVP / Growth (< 10,000 MAU)",
+) -> PRDResponseSchema:
     """
-    Generate a structured PRD using Google Gemini flash models.
+    Generate a Master Product & Technical Blueprint using Google Gemini flash models.
 
     Wrapped with Tenacity @retry decorator:
     - Retries up to 3 times on 429 Rate Limit / Quota Exceeded exceptions
@@ -131,16 +160,13 @@ async def generate_prd_from_brief(brief: str, title: str) -> PRDResponseSchema:
     - Reraises GeminiRateLimitException if all 3 retries fail
 
     Args:
-        brief (str): The functional project brief description.
+        brief (str): The functional project description and specifications.
         title (str): The project title.
+        price_range (str): Target budget tier.
+        traffic_range (str): Expected traffic scale.
 
     Returns:
-        PRDResponseSchema: Validated Pydantic model containing architecture,
-                           database tables, API routes, and Mermaid diagram.
-
-    Raises:
-        GeminiRateLimitException: If 429 rate limit persists after 3 retries.
-        ValueError: If GEMINI_API_KEY is missing or model response is invalid.
+        PRDResponseSchema: Validated 5-module master blueprint model.
     """
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
@@ -159,26 +185,63 @@ async def generate_prd_from_brief(brief: str, title: str) -> PRDResponseSchema:
         if m not in candidate_models:
             candidate_models.append(m)
 
-    # Construct concise structured prompt to minimize token consumption and generation time
+    # Construct comprehensive 5-Module Master Blueprint Prompt
     prompt = f"""
-You are a Senior Technical Architect. Generate a concise, production-ready Product Requirement Document (PRD) for:
+You are an Elite AI Software Architect and Product Lead. Your task is to generate a comprehensive, code-free "Master Product & Technical Blueprint" based strictly on the user parameters provided below.
 
-Title: {title}
-Brief: {brief}
+This document must act as a seamless bridge between a non-technical founder and a core developer. It must contain NO source code, but should provide absolute clarity on specifications, database logic, structural tiers, infrastructure scaling, and implementation paths.
 
-Guidelines:
-1. Provide a concise 'architecture_overview' (2-3 focused paragraphs).
-2. Provide 'database_tables' with relational tables and clean column definitions.
-3. Provide 'api_routes' with essential core endpoints.
-4. Provide a clean 'mermaid_diagram' starting with `graph TD`.
-5. Originality: Design unique, original entity schemas and architectures. Do not recite or copy proprietary documentation verbatim.
-Be precise, direct, and avoid redundant filler.
+### USER INPUTS:
+- Project Name: {title}
+- Project Description: {brief}
+- Target Price/Budget Range: {price_range}
+- Expected Traffic Range: {traffic_range}
+
+Generate the full blueprint using the following five-part framework:
+
+---
+
+### MODULE 1: PRODUCT REQUIREMENTS DOCUMENT (PRD)
+1.1 Executive Summary: Refine the user's description into a professional high-level product overview and value proposition.
+1.2 Scope Matrix (MVP vs. Phase 2): Group features into a clear matrix categorizing what is "In-Scope (Must Build for MVP)" and "Out-of-Scope (Deferred to Phase 2)". Priority tiers should be labeled as P0 (Critical) and P1 (High).
+1.3 Core User Stories & Acceptance Criteria: Provide a punchy list of user stories formatted as "As a [User Type], I want to [Action], so that [Value]". Each story must have a binary, testable "Acceptance Criteria" list.
+
+### MODULE 2: TRAFFIC-DRIVEN INFRASTRUCTURE & SCALING SPECIFICATION
+Based explicitly on the expected traffic range ({traffic_range}), map out the scaling parameters:
+2.1 Hosting Architecture: Recommend the exact hosting infrastructure type (e.g., Simple Shared/VPS like DigitalOcean/Render vs. Enterprise Auto-scaling AWS/GCP clusters). Explaining the "Why" behind it.
+2.2 Caching & CDN Strategy: Define whether the system requires active caching tiers (e.g., Redis, Memcached) or global edge delivery (e.g., Cloudflare) to optimize latency for this tier of traffic.
+2.3 Availability & Data Safety: Outline specific guidelines for system performance targets (e.g., API latency < 300ms) and database backup frequencies required to support this target traffic without downtime.
+
+### MODULE 3: BUDGET-OPTIMIZED TECH STACK SELECTION
+Based explicitly on the target price/budget range ({price_range}), propose a highly tailored stack:
+3.1 Technology Stack Selection: Detail the programming frameworks, databases, and third-party tools that balance maximum engineering velocity with minimum overhead cost (e.g., choosing BaaS options like Supabase/Firebase for low budgets vs. Custom Enterprise SQL/NoSQL architectures for high budgets). Do not write any code blocks, simply name the technologies.
+3.2 Estimated Monthly Operational Costs: Provide a structured table estimating the absolute running costs (Hosting, Domain, Authentication APIs, Database, Third-party integrations) mapping perfectly within the user's financial limits. Include category, tool name, and cost.
+
+### MODULE 4: INFORMATION ARCHITECTURE & DATABASE BLUEPRINT
+4.1 System Sitemap Tree: Outline a visual, nested map of all primary, secondary, and dashboard pages or route layouts required for this application type.
+4.2 Relational Data Entities (Schema Tables): For every core feature, list the required database tables. For each table, list the column names, the data types (e.g., Integer, String, Boolean, Timestamp, UUID), and explicit Primary/Foreign Key relational boundaries. Do not use SQL syntax.
+4.3 Mermaid Architecture Diagram: Generate a strictly valid Mermaid flowchart starting with `graph TD` showing Client -> CDN/Gateway -> Backend Server -> Database & Cache / External Services.
+
+### MODULE 5: STEP-BY-STEP DEVELOPER RUNBOOK
+5.1 Chronological Milestones: Divide the complete build into 4 clear execution phases:
+   - Phase 1: Environment Setup & Database Base Creation
+   - Phase 2: User Core Infrastructure & Backend API Layout
+   - Phase 3: Primary Functional Features Deployment
+   - Phase 4: Integration, Hardening, Optimization & Launch Prep
+5.2 Punchy Execution Tasks: Within each phase, provide a sequence of highly actionable, single-sentence instructions so a developer can execute down the line without guesswork.
+
+IMPORTANT GUIDELINES:
+- Output MUST strictly follow the JSON response schema.
+- Avoid any source code blocks. Focus purely on technical definitions, architectural design, and clear execution steps.
+- Use professional software engineering terminology and short, scannable sentences.
+- Originality: Create original entity schemas tailored specifically to the project.
 """
 
-    # Enforce application/json response MIME type, Pydantic schema structure, and generous token limits to avoid truncation
+    # Enforce application/json response MIME type with strict proto schema requiring all properties
+    proto_schema = _build_strict_proto_schema(GeminiBlueprintSchema)
     generation_config = GenerationConfig(
         response_mime_type="application/json",
-        response_schema=PRDResponseSchema,
+        response_schema=proto_schema,
         temperature=0.7,
         max_output_tokens=8192,
     )
@@ -186,7 +249,7 @@ Be precise, direct, and avoid redundant filler.
     last_error = None
     for model_name in candidate_models:
         try:
-            logger.info(f"Attempting PRD generation with model: {model_name}")
+            logger.info(f"Attempting Master Blueprint generation with model: {model_name}")
             model = genai.GenerativeModel(model_name=model_name)
             # Use asyncio.to_thread with REST transport for non-blocking and robust execution
             response = await asyncio.wait_for(
@@ -211,6 +274,17 @@ Be precise, direct, and avoid redundant filler.
             # Validate JSON against Pydantic PRDResponseSchema model
             parsed_data = json.loads(raw_json_text)
             validated_prd = PRDResponseSchema.model_validate(parsed_data)
+
+            # Ensure backward compatibility aliases are populated
+            if not validated_prd.architecture_overview and validated_prd.module_1_prd:
+                validated_prd.architecture_overview = validated_prd.module_1_prd.executive_summary
+            if not validated_prd.database_tables and validated_prd.module_4_data_architecture:
+                validated_prd.database_tables = validated_prd.module_4_data_architecture.database_tables
+            if not validated_prd.api_routes and validated_prd.module_4_data_architecture:
+                validated_prd.api_routes = validated_prd.module_4_data_architecture.api_routes
+            if not validated_prd.mermaid_diagram and validated_prd.module_4_data_architecture:
+                validated_prd.mermaid_diagram = validated_prd.module_4_data_architecture.mermaid_diagram
+
             return validated_prd
         except Exception as err:
             logger.warning(f"Model {model_name} failed: {err}")

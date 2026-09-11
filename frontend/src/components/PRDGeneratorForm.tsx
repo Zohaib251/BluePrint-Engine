@@ -56,7 +56,12 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
 `.trim();
 
     try {
-      const newPrd = await generatePRD(title.trim(), fullBrief);
+      const newPrd = await generatePRD(
+        title.trim(),
+        fullBrief,
+        budget,
+        expectedTraffic
+      );
       onSuccess(newPrd);
 
       // Reset form on success
@@ -81,10 +86,10 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
       <div className="flex items-center justify-between border-b border-gray-800 pb-4">
         <h2 className="text-base font-bold text-gray-100 flex items-center space-x-2">
           <Sparkles className="w-4 h-4 text-gray-300" />
-          <span>New Architecture Blueprint</span>
+          <span>Master Architecture Blueprint</span>
         </h2>
         <span className="text-[11px] font-mono bg-gray-800 text-gray-300 px-2.5 py-1 rounded border border-gray-700">
-          GEMINI FLASH
+          5-MODULE ARCHITECT
         </span>
       </div>
 
@@ -105,14 +110,14 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
       )}
 
       {isGenerating ? (
-        /* Dynamic "Building Blueprint..." Skeleton Loader */
+        /* Dynamic "Building Master Blueprint..." Skeleton Loader */
         <div className="bg-gray-950 border border-gray-800 rounded-xl p-6 space-y-5 animate-pulse">
           <div className="flex items-center space-x-3 text-gray-300">
             <Loader2 className="w-5 h-5 text-gray-100 animate-spin" />
             <div>
-              <h3 className="text-sm font-semibold text-gray-100">Building Blueprint...</h3>
+              <h3 className="text-sm font-semibold text-gray-100">Synthesizing Master Blueprint...</h3>
               <p className="text-xs text-gray-400 font-mono">
-                Synthesizing architecture, DB schemas, and Mermaid diagrams
+                Generating 5 modules: PRD, Infrastructure, Budget Tech Stack, Data Architecture & Developer Runbook
               </p>
             </div>
           </div>
@@ -123,18 +128,26 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
             <div className="h-3 bg-gray-800/40 rounded-full w-5/6"></div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 pt-2">
-            <div className="bg-gray-900 border border-gray-800 p-3 rounded-lg flex items-center space-x-2 text-xs text-gray-400">
-              <Cpu className="w-3.5 h-3.5 text-gray-300" />
-              <span>System Design</span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-2">
+            <div className="bg-gray-900 border border-gray-800 p-2.5 rounded-lg flex items-center space-x-2 text-xs text-gray-400">
+              <Cpu className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+              <span>1. PRD & Scope Matrix</span>
             </div>
-            <div className="bg-gray-900 border border-gray-800 p-3 rounded-lg flex items-center space-x-2 text-xs text-gray-400">
-              <Database className="w-3.5 h-3.5 text-gray-300" />
-              <span>SQL Schemas</span>
+            <div className="bg-gray-900 border border-gray-800 p-2.5 rounded-lg flex items-center space-x-2 text-xs text-gray-400">
+              <Layers className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+              <span>2. Traffic Scaling Infra</span>
             </div>
-            <div className="bg-gray-900 border border-gray-800 p-3 rounded-lg flex items-center space-x-2 text-xs text-gray-400">
-              <Layers className="w-3.5 h-3.5 text-gray-300" />
-              <span>Mermaid Graph</span>
+            <div className="bg-gray-900 border border-gray-800 p-2.5 rounded-lg flex items-center space-x-2 text-xs text-gray-400">
+              <Database className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+              <span>3. Budget Stack & Costs</span>
+            </div>
+            <div className="bg-gray-900 border border-gray-800 p-2.5 rounded-lg flex items-center space-x-2 text-xs text-gray-400">
+              <Layers className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+              <span>4. Data Entities & Graph</span>
+            </div>
+            <div className="bg-gray-900 border border-gray-800 p-2.5 rounded-lg flex items-center space-x-2 text-xs text-gray-400 sm:col-span-2">
+              <Cpu className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+              <span>5. Developer Runbook (4 Phases)</span>
             </div>
           </div>
         </div>
