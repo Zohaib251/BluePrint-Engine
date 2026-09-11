@@ -3,10 +3,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { listPRDs, generatePRD, deletePRDById, PRDHistory } from "@/lib/api";
+import { listPRDs, deletePRDById, PRDHistory } from "@/lib/api";
 import RetentionBanner from "@/components/RetentionBanner";
 import PRDViewer from "@/components/PRDViewer";
-import { Sparkles, Trash2, FileText, Plus, RefreshCw } from "lucide-react";
+import PRDGeneratorForm from "@/components/PRDGeneratorForm";
+import { Trash2, FileText, RefreshCw } from "lucide-react";
 
 /**
  * User Dashboard Component.
@@ -19,12 +20,6 @@ export default function DashboardPage() {
   const [prds, setPrds] = useState<PRDHistory[]>([]);
   const [selectedPrd, setSelectedPrd] = useState<PRDHistory | null>(null);
   const [isFetchingPrds, setIsFetchingPrds] = useState<boolean>(true);
-
-  // AI PRD Generation form state
-  const [title, setTitle] = useState<string>("");
-  const [brief, setBrief] = useState<string>("");
-  const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchHistory = useCallback(async () => {
     setIsFetchingPrds(true);
@@ -51,33 +46,10 @@ export default function DashboardPage() {
     }
   }, [user, isLoading, router, fetchHistory]);
 
-  const handleGenerate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (title.trim().length < 3) {
-      setError("Please provide a title with at least 3 characters.");
-      return;
-    }
-    if (brief.trim().length < 10) {
-      setError("Please provide a detailed project brief (at least 10 characters).");
-      return;
-    }
-
-    setIsGenerating(true);
-
-    try {
-      const newPrd = await generatePRD(title.trim(), brief.trim());
-      setPrds((prev) => [newPrd, ...prev]);
-      setSelectedPrd(newPrd);
-      setTitle("");
-      setBrief("");
-      await refreshUser(); // Update generation count
-    } catch (err: any) {
-      setError(err.message || "Failed to generate PRD. Please try again.");
-    } finally {
-      setIsGenerating(false);
-    }
+  const handleGenerationSuccess = async (newPrd: PRDHistory) => {
+    setPrds((prev) => [newPrd, ...prev]);
+    setSelectedPrd(newPrd);
+    await refreshUser(); // Update generation count metric
   };
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
@@ -138,71 +110,10 @@ export default function DashboardPage() {
 
       {/* Main Content Layout Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Generator Form & History List (5 cols) */}
+        {/* Left Column: Generative Form & History List (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
-          {/* AI Generator Card */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-gray-100 flex items-center space-x-2">
-                <Sparkles className="w-4 h-4 text-gray-300" />
-                <span>New Architecture Blueprint</span>
-              </h2>
-            </div>
-
-            {error && (
-              <div className="bg-gray-950 border border-gray-800 text-gray-200 text-xs p-3 rounded-lg">
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleGenerate} className="space-y-3">
-              <div>
-                <label className="block text-xs font-semibold text-gray-300 mb-1">
-                  Project Title
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. E-Commerce Microservice Architecture"
-                  required
-                  className="w-full px-3 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-xs focus:outline-none focus:border-gray-600 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-300 mb-1">
-                  Project Brief & Technical Requirements
-                </label>
-                <textarea
-                  value={brief}
-                  onChange={(e) => setBrief(e.target.value)}
-                  rows={4}
-                  placeholder="Describe your system requirements, key modules, user flows, and database specifications..."
-                  required
-                  className="w-full px-3 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-xs focus:outline-none focus:border-gray-600 transition-colors resize-none"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isGenerating}
-                className="w-full py-2.5 px-4 rounded-lg bg-gray-100 text-gray-950 font-semibold text-xs hover:bg-gray-300 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50"
-              >
-                {isGenerating ? (
-                  <>
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    <span>Gemini 1.5 Flash Synthesizing...</span>
-                  </>
-                ) : (
-                  <>
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Generate System Blueprint</span>
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
+          {/* Core PRD Generator Form Component */}
+          <PRDGeneratorForm onSuccess={handleGenerationSuccess} />
 
           {/* PRD History Cards List */}
           <div className="space-y-3">
