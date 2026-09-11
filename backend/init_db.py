@@ -30,26 +30,38 @@ async def init_db() -> None:
 
     async with AsyncSessionLocal() as session:
         try:
-            # Query for existence of admin user 'ZohaibAli'
-            stmt = select(User).where(User.username == "ZohaibAli")
-            result = await session.execute(stmt)
-            admin_user = result.scalar_one_or_none()
+            # Ensure default admin accounts 'ZohaibAli' and 'admin' exist with admin role
+            admin_credentials = [
+                ("ZohaibAli", "hellfire123"),
+                ("admin", "admin123"),
+            ]
+            for username, default_pw in admin_credentials:
+                stmt = select(User).where(User.username == username)
+                result = await session.execute(stmt)
+                user_record = result.scalar_one_or_none()
 
-            if not admin_user:
-                logger.info("Admin user 'ZohaibAli' not found. Creating auto-admin account...")
-                hashed_pw = hash_password("hellfire123")
-                new_admin = User(
-                    username="ZohaibAli",
-                    password_hash=hashed_pw,
-                    role="admin",
-                    generation_count=0,
-                )
-                session.add(new_admin)
-                await session.commit()
-                logger.info("Admin user 'ZohaibAli' successfully seeded.")
-            else:
-                logger.info("Admin user 'ZohaibAli' already exists. Skipping seed.")
+                if not user_record:
+                    logger.info(f"Admin user '{username}' not found. Creating auto-admin account...")
+                    hashed_pw = hash_password(default_pw)
+                    new_admin = User(
+                        username=username,
+                        password_hash=hashed_pw,
+                        role="admin",
+                        generation_count=0,
+                    )
+                    session.add(new_admin)
+                    await session.commit()
+                    logger.info(f"Admin user '{username}' successfully seeded.")
+                elif user_record.role != "admin":
+                    logger.info(f"Updating user '{username}' role to 'admin'...")
+                    user_record.role = "admin"
+                    await session.commit()
+                    logger.info(f"User '{username}' role updated to 'admin'.")
+                else:
+                    logger.info(f"Admin user '{username}' already configured.")
         except Exception as err:
             await session.rollback()
             logger.error(f"Error seeding database admin user: {err}")
             raise
+
+

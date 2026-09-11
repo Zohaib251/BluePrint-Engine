@@ -24,7 +24,7 @@ export default function HomePage() {
         </p>
         <div className="flex items-center justify-center space-x-4 pt-4">
           <Link
-            href="/"
+            href="/dashboard"
             className="px-6 py-3 rounded-lg bg-gray-100 text-gray-950 font-semibold text-sm hover:bg-gray-300 transition-colors shadow-lg"
           >
             Create Architecture Blueprint

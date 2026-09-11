@@ -63,6 +63,8 @@ async def start_pruning_background_loop(interval_hours: int = 24) -> None:
         interval_hours (int): Interval between cleanup executions in hours (default: 24h).
     """
     logger.info("[Background Pruning] Initializing PRD History automated 30-day retention loop...")
+    # Initial grace period before first cleanup run
+    await asyncio.sleep(10)
     while True:
         try:
             await prune_expired_prd_histories()
