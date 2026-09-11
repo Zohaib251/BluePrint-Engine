@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,11 +9,16 @@ import SecurityProvider from "@/components/SecurityProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
-// Configure Poppins font from Google Fonts with variable support
-const poppins = Poppins({
+// Configure ultra-crisp Inter & JetBrains Mono fonts for maximum legibility
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-poppins",
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -60,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${poppins.variable} dark`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} dark`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -96,7 +101,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className="bg-background text-foreground font-poppins min-h-screen flex flex-col antialiased selection:bg-primary/25 selection:text-primary relative bg-blueprint-grid">
+      <body className="bg-background text-foreground font-sans min-h-screen flex flex-col antialiased selection:bg-primary/25 selection:text-primary relative bg-blueprint-grid">
         <SecurityProvider>
           <AuthProvider>
             <Navbar />

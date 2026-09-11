@@ -65,7 +65,11 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased min-h-screen flex flex-col selection:bg-primary/25 selection:text-primary;
+    @apply bg-background text-foreground antialiased min-h-screen flex flex-col selection:bg-primary/25 selection:text-primary font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 }
 
