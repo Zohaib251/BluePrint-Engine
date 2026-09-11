@@ -1,24 +1,40 @@
 """
 Blueprint Engine API Application.
 
-FastAPI backend service serving core API endpoints and health checks.
+FastAPI backend service serving core API endpoints, database startup hooks, and health checks.
 Requires Python 3.10+ and virtual environment execution.
 """
 
 import os
-from typing import Dict
+from contextlib import asynccontextmanager
+from typing import Dict, AsyncGenerator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from init_db import init_db
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Initialize FastAPI Application instance
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """
+    Application lifespan context manager for startup and shutdown events.
+
+    Runs database initialization and default admin seeding on application boot.
+    """
+    # Execute database table creation and admin seeder on startup
+    await init_db()
+    yield
+
+
+# Initialize FastAPI Application instance with lifespan hook
 app = FastAPI(
     title="Blueprint Engine API",
     description="Backend API Service for Blueprint Engine Monorepo",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 # Parse allowed CORS origins from environment configuration

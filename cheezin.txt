@@ -1,0 +1,28 @@
+==============================================================================
+CHEEZIN DEPENDENCY TRACKER & API SETUP INSTRUCTIONS
+==============================================================================
+
+[SUPABASE POSTGRESQL DATABASE SETUP]
+------------------------------------------------------------------------------
+Step 1: Create a Supabase Account & Project
+  1. Go to https://supabase.com and sign in or create an account.
+  2. Click "New Project" and enter project details (Name, Database Password, Region).
+  3. Save your Database Password securely.
+
+Step 2: Retrieve PostgreSQL Connection URI
+  1. Navigate to Project Settings -> Database.
+  2. Scroll down to "Connection Strings" section.
+  3. Select the "URI" tab.
+  4. Copy the connection string. It will look like:
+     postgresql://postgres.[PROJECT-REF]:[YOUR-PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres
+
+Step 3: Format URI for SQLAlchemy Async (asyncpg driver)
+  1. Update the scheme from "postgresql://" to "postgresql+asyncpg://".
+  2. Replace [YOUR-PASSWORD] with your actual database password.
+  3. Example formatted string:
+     postgresql+asyncpg://postgres.ref:password@aws-0-region.pooler.supabase.com:6543/postgres
+
+Step 4: Update Backend Environment File
+  1. Open backend/.env (create from backend/.env.example if missing).
+  2. Add/Update the DATABASE_URL key:
+     DATABASE_URL=postgresql+asyncpg://postgres.ref:password@aws-0-region.pooler.supabase.com:6543/postgres
