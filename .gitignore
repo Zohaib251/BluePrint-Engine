@@ -17,6 +17,10 @@ secrets/
 credentials.json
 service-account*.json
 
+# Local Dependency Instructions & Agent Customization Rules
+cheezin.txt
+.agents/
+
 # ------------------------------------------------------------------------------
 # 2. Python Backend (Bytecode, Virtual Environments, Testing & Caching)
 # ------------------------------------------------------------------------------
