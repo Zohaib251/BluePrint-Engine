@@ -39,7 +39,7 @@ if DATABASE_URL.startswith("postgresql://"):
 
 # JWT Authentication Security Configuration
 JWT_SECRET_KEY: str = os.getenv(
-    "JWT_SECRET_KEY", "b8f3a9e1d7c4b2a09876543210fedcba876543210abcdef1234567890abcdef"
+    "JWT_SECRET_KEY", "fallback_dev_secret_key_change_me_in_production_32b"
 )
 JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))

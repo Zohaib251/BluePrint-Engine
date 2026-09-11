@@ -1,7 +1,7 @@
 """
 Database connection and session management module.
 
-Configures asynchronous SQLAlchemy engine and session factory for Supabase/PostgreSQL.
+Configures asynchronous SQLAlchemy engine and session factory for Neon.tech/PostgreSQL.
 """
 
 import os
