@@ -31,6 +31,20 @@ Step 4: Update Backend Environment File
      DATABASE_URL=postgresql+asyncpg://alex:AbC123dEf@ep-cool-darkness-123456.us-east-2.aws.neon.tech/neondb?sslmode=require
 
 ------------------------------------------------------------------------------
+[GOOGLE GEMINI API KEY SETUP]
+------------------------------------------------------------------------------
+Step 1: Obtain a Gemini API Key
+  1. Go to Google AI Studio at https://aistudio.google.com/app/apikey
+  2. Sign in with your Google account.
+  3. Click "Create API Key" (or select an existing project).
+  4. Copy the generated API key.
+
+Step 2: Add API Key to Environment File
+  1. Open backend/.env file.
+  2. Add/Update the GEMINI_API_KEY variable:
+     GEMINI_API_KEY=AIzaSyYourGeneratedGeminiApiKeyHere
+
+------------------------------------------------------------------------------
 [JWT AUTHENTICATION ENVIRONMENT KEYS]
 ------------------------------------------------------------------------------
 Add the following keys to backend/.env for JWT security:

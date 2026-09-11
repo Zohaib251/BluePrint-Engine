@@ -18,7 +18,7 @@ python -m venv venv
 # Activate Virtual Environment (Linux / macOS):
 # source venv/bin/activate
 
-# Install Python backend dependencies (FastAPI, SQLAlchemy, asyncpg, passlib, bcrypt, PyJWT, SlowAPI)
+# Install Python backend dependencies (FastAPI, SQLAlchemy, asyncpg, passlib, bcrypt, PyJWT, SlowAPI, Google Generative AI)
 pip install -r requirements.txt
 
 # Step 3: Set up Frontend Node Dependencies

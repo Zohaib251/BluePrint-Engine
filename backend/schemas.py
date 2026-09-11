@@ -1,12 +1,12 @@
 """
 Pydantic Data Schemas Module.
 
-Provides request validation models and response serializers for Auth and PRD endpoints.
+Provides request validation models and response serializers for Auth, PRD CRUD, and Gemini AI Structured Outputs.
 """
 
 from datetime import datetime
 from uuid import UUID
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -75,3 +75,60 @@ class PRDResponse(BaseModel):
     title: str
     content: str
     created_at: datetime
+
+
+class ProjectBriefRequest(BaseModel):
+    """Payload validation for initiating Gemini AI PRD generation."""
+
+    title: str = Field(
+        ..., min_length=3, max_length=255, description="Target application or feature title"
+    )
+    brief: str = Field(
+        ..., min_length=10, description="Project specification, requirements, and functional brief"
+    )
+
+
+class DatabaseTableColumn(BaseModel):
+    """Schema defining a database column."""
+
+    name: str = Field(..., description="Column name")
+    type: str = Field(..., description="Data type (e.g. VARCHAR, UUID, INTEGER, TIMESTAMP)")
+    constraints: str = Field(..., description="Column constraints (e.g. PRIMARY KEY, UNIQUE, NOT NULL)")
+
+
+class DatabaseTableSchema(BaseModel):
+    """Schema defining a database table."""
+
+    table_name: str = Field(..., description="Database table name")
+    description: str = Field(..., description="Table purpose description")
+    columns: List[DatabaseTableColumn] = Field(..., description="List of columns")
+
+
+class APIRouteSchema(BaseModel):
+    """Schema defining an API route."""
+
+    method: str = Field(..., description="HTTP Method (GET, POST, PUT, DELETE)")
+    path: str = Field(..., description="URL endpoint path")
+    summary: str = Field(..., description="Summary of endpoint functionality")
+
+
+class PRDResponseSchema(BaseModel):
+    """
+    Pydantic v2 Structured Output Schema for Gemini PRD Generation.
+
+    Enforces architecture overview, database schema, API routes, and valid Mermaid.js syntax.
+    """
+
+    title: str = Field(..., description="PRD Document Title")
+    architecture_overview: str = Field(
+        ..., description="Comprehensive system architecture overview and design explanations"
+    )
+    database_tables: List[DatabaseTableSchema] = Field(
+        ..., description="List of relational database table schemas"
+    )
+    api_routes: List[APIRouteSchema] = Field(
+        ..., description="List of RESTful backend API routes"
+    )
+    mermaid_diagram: str = Field(
+        ..., description="Strictly valid Mermaid.js diagram string (e.g., graph TD or sequenceDiagram)"
+    )

@@ -1,7 +1,7 @@
 """
-PRD History CRUD operations router.
+PRD History CRUD and AI Generation router.
 
-Provides endpoints for creating, reading, listing, and deleting generated PRD history records.
+Provides endpoints for generating PRDs via Gemini 1.5 Flash, reading, listing, and deleting PRD records.
 Protected strictly by JWT user authentication context.
 """
 
@@ -13,10 +13,53 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models import User, PRDHistory
-from schemas import PRDCreate, PRDResponse
+from schemas import PRDCreate, PRDResponse, ProjectBriefRequest
 from auth import get_current_user
+from ai_service import generate_prd_from_brief
 
-router = APIRouter(prefix="/api/prd", tags=["PRD History"])
+router = APIRouter(prefix="/api/prd", tags=["PRD Management"])
+
+
+@router.post("/generate", response_model=PRDResponse, status_code=status.HTTP_201_CREATED)
+async def generate_and_save_prd(
+    brief_data: ProjectBriefRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> PRDHistory:
+    """
+    Generate a new PRD using Gemini 1.5 Flash AI and persist the structured JSON to PRDHistory.
+
+    Increments the authenticated user's generation count upon successful generation.
+    """
+    try:
+        # Invoke Gemini AI Service to generate structured PRD schema
+        structured_prd = await generate_prd_from_brief(
+            brief=brief_data.brief, title=brief_data.title
+        )
+    except ValueError as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(err),
+        )
+
+    # Dump validated Pydantic model to JSON string for database storage
+    prd_json_content = structured_prd.model_dump_json()
+
+    # Create new PRDHistory database entity
+    new_prd_history = PRDHistory(
+        user_id=current_user.id,
+        title=brief_data.title,
+        content=prd_json_content,
+    )
+    db.add(new_prd_history)
+
+    # Increment user generation counter
+    current_user.generation_count += 1
+
+    await db.commit()
+    await db.refresh(new_prd_history)
+
+    return new_prd_history
 
 
 @router.post("", response_model=PRDResponse, status_code=status.HTTP_201_CREATED)
@@ -26,8 +69,7 @@ async def create_prd_history(
     db: AsyncSession = Depends(get_db),
 ) -> PRDHistory:
     """
-    Create a new PRD history record associated with current authenticated user.
-    Increments the user's generation count.
+    Create a new manual PRD history record associated with current authenticated user.
     """
     new_prd = PRDHistory(
         user_id=current_user.id,
@@ -72,7 +114,6 @@ async def get_prd_history_by_id(
 ) -> PRDHistory:
     """
     Retrieve a specific PRD history record by unique identifier.
-    Must belong to current authenticated user.
     """
     stmt = select(PRDHistory).where(
         PRDHistory.id == prd_id, PRDHistory.user_id == current_user.id
@@ -97,7 +138,6 @@ async def delete_prd_history_by_id(
 ) -> None:
     """
     Delete a specific PRD history record by unique identifier.
-    Must belong to current authenticated user.
     """
     stmt = select(PRDHistory).where(
         PRDHistory.id == prd_id, PRDHistory.user_id == current_user.id
