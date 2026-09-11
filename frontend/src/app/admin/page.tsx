@@ -83,7 +83,7 @@ export default function AdminPage() {
   if (isAuthLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-3">
-        <Cpu className="w-5 h-5 text-cyan-400 animate-spin" />
+        <Cpu className="w-5 h-5 text-primary animate-spin" />
         <p className="text-xs font-mono text-muted-foreground">Authenticating admin session...</p>
       </div>
     );
@@ -92,8 +92,8 @@ export default function AdminPage() {
   if (!isAdmin) {
     return (
       <main className="max-w-md mx-auto py-16 text-center space-y-4">
-        <div className="p-7 rounded-3xl bg-card/70 border border-border backdrop-blur-xl shadow-2xl text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mx-auto">
+        <div className="p-7 rounded-3xl bg-card border border-border shadow-xl text-center space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-destructive/10 border border-destructive/20 flex items-center justify-center text-destructive mx-auto">
             <ShieldAlert className="w-6 h-6" />
           </div>
           <h2 className="text-base font-bold text-foreground">Superuser Access Restricted</h2>
@@ -134,7 +134,7 @@ export default function AdminPage() {
           <button
             onClick={handleManualPrune}
             disabled={isPruning}
-            className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-rose-950/30 border border-rose-800/50 text-rose-300 hover:bg-rose-900/40 hover:text-rose-100 transition-colors text-xs font-semibold disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive hover:bg-destructive/20 transition-colors text-xs font-semibold disabled:opacity-50 cursor-pointer"
           >
             {isPruning ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
             <span>{isPruning ? "Pruning Database..." : "Execute 30-Day TTL Pruning"}</span>
@@ -143,7 +143,7 @@ export default function AdminPage() {
           {/* Switch to User Studio */}
           <button
             onClick={() => router.push("/dashboard")}
-            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-primary-foreground text-xs font-bold shadow-cyan-glow hover:from-cyan-300 hover:to-blue-400 transition-all cursor-pointer"
+            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-all cursor-pointer shadow-sm"
           >
             <ArrowLeftRight className="w-3.5 h-3.5" />
             <span>Studio View</span>
@@ -170,10 +170,10 @@ export default function AdminPage() {
 
       {/* Analytics KPI Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="p-5 rounded-2xl bg-card/70 border border-border space-y-2">
+        <div className="p-5 rounded-2xl bg-card border border-border space-y-2 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground text-xs">
             <span>Total Registered Users</span>
-            <Users className="w-4 h-4 text-cyan-400" />
+            <Users className="w-4 h-4 text-primary" />
           </div>
           <p className="text-2xl font-bold text-foreground font-mono">
             {isFetchingAnalytics ? "..." : analytics?.total_users || 0}
@@ -181,10 +181,10 @@ export default function AdminPage() {
           <p className="text-[11px] text-muted-foreground font-mono">Active account records in PostgreSQL</p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-card/70 border border-border space-y-2">
+        <div className="p-5 rounded-2xl bg-card border border-border space-y-2 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground text-xs">
             <span>Total Generated Blueprints</span>
-            <Database className="w-4 h-4 text-blue-400" />
+            <Database className="w-4 h-4 text-primary" />
           </div>
           <p className="text-2xl font-bold text-foreground font-mono">
             {isFetchingAnalytics ? "..." : analytics?.total_prds || 0}
@@ -192,18 +192,18 @@ export default function AdminPage() {
           <p className="text-[11px] text-muted-foreground font-mono">Synthesized 5-module documents</p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-card/70 border border-border space-y-2">
+        <div className="p-5 rounded-2xl bg-card border border-border space-y-2 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground text-xs">
             <span>Automated TTL Pruning Loop</span>
-            <Layers className="w-4 h-4 text-emerald-400" />
+            <Layers className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-2xl font-bold text-emerald-400 font-mono">Active (24h Interval)</p>
+          <p className="text-2xl font-bold text-emerald-500 font-mono">Active (24h Interval)</p>
           <p className="text-[11px] text-muted-foreground font-mono">Admin accounts permanently exempt</p>
         </div>
       </div>
 
       {/* Registered Users Directory Data Table Block */}
-      <div className="rounded-2xl p-6 bg-card/70 border border-border space-y-5 shadow-xl">
+      <div className="rounded-2xl p-6 bg-card border border-border space-y-5 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-sm font-bold text-foreground">Registered User Directory</h2>
@@ -219,7 +219,7 @@ export default function AdminPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search username or role..."
-                className="pl-8 pr-3 py-1.5 rounded-lg bg-background/80 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-cyan-500/50"
+                className="pl-8 pr-3 py-1.5 rounded-lg bg-secondary/40 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
               />
             </div>
 

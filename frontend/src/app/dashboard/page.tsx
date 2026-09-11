@@ -91,8 +91,8 @@ export default function DashboardPage() {
   if (isLoading || (!user && isFetchingPrds)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[55vh] space-y-3">
-        <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center">
-          <Cpu className="w-4 h-4 text-cyan-400 animate-spin" />
+        <div className="w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+          <Cpu className="w-4 h-4 text-primary animate-spin" />
         </div>
         <p className="text-xs font-mono text-muted-foreground">Loading Architectural Studio...</p>
       </div>
@@ -106,23 +106,23 @@ export default function DashboardPage() {
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Stat 1: Quota Usage */}
-        <div className="p-4 rounded-2xl bg-card/70 border border-border space-y-2">
+        <div className="p-4 rounded-2xl bg-card border border-border space-y-2 shadow-sm">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Monthly Free Quota</span>
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
           </div>
           <div className="flex items-baseline justify-between">
             <span className="text-xl font-bold text-foreground">
               {isAdmin ? "Unlimited" : `${quotaCount} / 5`}
             </span>
-            <span className="text-[10px] font-mono text-cyan-400">
+            <span className="text-[10px] font-mono text-primary">
               {isAdmin ? "ADMIN TIER" : `${5 - quotaCount} remaining`}
             </span>
           </div>
           {!isAdmin && (
             <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full"
+                className="h-full bg-primary rounded-full"
                 style={{ width: `${quotaPercentage}%` }}
               />
             </div>
@@ -191,7 +191,7 @@ export default function DashboardPage() {
               <button
                 onClick={fetchHistory}
                 disabled={isFetchingPrds}
-                className="text-xs text-muted-foreground hover:text-cyan-400 transition-colors flex items-center space-x-1 cursor-pointer"
+                className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center space-x-1 cursor-pointer"
               >
                 <RefreshCw className={`w-3 h-3 ${isFetchingPrds ? "animate-spin" : ""}`} />
                 <span>Sync</span>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Filter blueprints by name..."
-                  className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-background/80 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-cyan-500/50"
+                  className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-secondary/40 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
                 />
               </div>
             )}
@@ -233,12 +233,12 @@ export default function DashboardPage() {
                       onClick={() => setSelectedPrd(prd)}
                       className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between group ${
                         isSelected
-                          ? "bg-cyan-950/30 border-cyan-500/50 shadow-sm"
+                          ? "bg-primary/10 border-primary shadow-sm"
                           : "bg-secondary/40 border-border hover:border-border/80 hover:bg-secondary/70"
                       }`}
                     >
                       <div className="min-w-0 flex-1 pr-3">
-                        <h4 className={`text-xs font-bold truncate ${isSelected ? "text-cyan-300" : "text-foreground group-hover:text-cyan-300"}`}>
+                        <h4 className={`text-xs font-bold truncate ${isSelected ? "text-primary" : "text-foreground group-hover:text-primary"}`}>
                           {prd.title}
                         </h4>
                         <div className="flex items-center space-x-2 text-[10px] font-mono text-muted-foreground mt-1">
@@ -250,12 +250,12 @@ export default function DashboardPage() {
                       <div className="flex items-center space-x-1">
                         <button
                           onClick={(e) => handleDelete(prd.id, e)}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-400 hover:bg-rose-950/40 transition-colors"
+                          className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                           title="Delete blueprint"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
-                        <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? "text-cyan-400 translate-x-0.5" : "text-muted-foreground/50"}`} />
+                        <ChevronRight className={`w-4 h-4 transition-transform ${isSelected ? "text-primary translate-x-0.5" : "text-muted-foreground/50"}`} />
                       </div>
                     </div>
                   );

@@ -115,7 +115,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
       {/* Studio Header */}
       <div className="flex items-center justify-between border-b border-border/80 pb-4">
         <div className="flex items-center space-x-2.5">
-          <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
             <SlidersHorizontal className="w-4 h-4" />
           </div>
           <div>
@@ -125,8 +125,8 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
         </div>
 
         <div className="flex items-center space-x-2">
-          <span className="text-[10px] font-mono bg-cyan-950/80 text-cyan-400 border border-cyan-800/80 px-2 py-0.5 rounded flex items-center space-x-1">
-            <ShieldCheck className="w-3 h-3" />
+          <span className="text-[10px] font-mono bg-secondary text-foreground border border-border px-2 py-0.5 rounded flex items-center space-x-1">
+            <ShieldCheck className="w-3 h-3 text-primary" />
             <span>PROTECTED</span>
           </span>
         </div>
@@ -145,38 +145,38 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
 
       {isGenerating ? (
         /* Dynamic Synthesis Progress Screen */
-        <div className="rounded-xl p-6 border border-cyan-500/30 bg-background/60 space-y-5">
+        <div className="rounded-xl p-6 border border-primary/30 bg-background/60 space-y-5">
           <div className="flex items-center space-x-3">
-            <Loader2 className="w-5 h-5 text-cyan-400 animate-spin" />
+            <Loader2 className="w-5 h-5 text-primary animate-spin" />
             <div>
               <h3 className="text-sm font-bold text-foreground">Synthesizing Architecture Blueprint...</h3>
               <p className="text-[11px] font-mono text-muted-foreground">
-                Google Gemini 3.5 is compiling 5 modules with zero code truncation
+                Google Gemini is compiling 5 modules with zero code truncation
               </p>
             </div>
           </div>
 
           <div className="space-y-2 pt-2">
-            <div className="h-2 rounded-full bg-cyan-950 border border-cyan-800/40 overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full w-4/5 animate-pulse" />
+            <div className="h-2 rounded-full bg-secondary border border-border overflow-hidden">
+              <div className="h-full bg-primary rounded-full w-4/5 animate-pulse" />
             </div>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px] font-mono pt-2">
             <div className="p-2.5 rounded-lg bg-secondary/80 border border-border flex items-center space-x-2 text-muted-foreground">
-              <Cpu className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <Cpu className="w-3.5 h-3.5 text-primary shrink-0" />
               <span>1. PRD Scope Matrix</span>
             </div>
             <div className="p-2.5 rounded-lg bg-secondary/80 border border-border flex items-center space-x-2 text-muted-foreground">
-              <Layers className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+              <Layers className="w-3.5 h-3.5 text-foreground shrink-0" />
               <span>2. Traffic Scaling Specs</span>
             </div>
             <div className="p-2.5 rounded-lg bg-secondary/80 border border-border flex items-center space-x-2 text-muted-foreground">
-              <Database className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <Database className="w-3.5 h-3.5 text-primary shrink-0" />
               <span>3. Cost Table & Stack</span>
             </div>
             <div className="p-2.5 rounded-lg bg-secondary/80 border border-border flex items-center space-x-2 text-muted-foreground">
-              <Layers className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+              <Layers className="w-3.5 h-3.5 text-foreground shrink-0" />
               <span>4. DB ERD & Flowchart</span>
             </div>
             <div className="p-2.5 rounded-lg bg-secondary/80 border border-border flex items-center space-x-2 text-muted-foreground sm:col-span-2">
@@ -191,7 +191,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
           {/* Project Title */}
           <div className="space-y-1.5">
             <label className="block text-xs font-semibold text-foreground">
-              Project Title <span className="text-cyan-400">*</span>
+              Project Title <span className="text-primary">*</span>
             </label>
             <input
               type="text"
@@ -200,7 +200,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
               placeholder="e.g. AI-Powered SaaS Analytics Engine"
               required
               {...secureInputProps}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-background/80 border border-border text-foreground text-xs focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/40 transition-all placeholder:text-muted-foreground/60"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-background/80 border border-border text-foreground text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-ring transition-all placeholder:text-muted-foreground/60"
             />
           </div>
 
@@ -219,7 +219,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
                     setTitle(idea.title);
                     setTechStack(idea.tech);
                   }}
-                  className="px-2.5 py-1 rounded-lg bg-secondary/70 hover:bg-secondary border border-border/80 text-[11px] text-muted-foreground hover:text-cyan-300 transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg bg-secondary/70 hover:bg-secondary border border-border/80 text-[11px] text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                 >
                   {idea.title}
                 </button>
@@ -231,7 +231,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="block text-xs font-semibold text-foreground">
-                Project Specification & Brief <span className="text-cyan-400">*</span>
+                Project Specification & Brief <span className="text-primary">*</span>
               </label>
               <span className="text-[11px] font-mono text-muted-foreground">
                 {projectIdea.length}/{MAX_IDEA_LENGTH}
@@ -244,7 +244,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
               placeholder="Describe your core product concept, key features, target users, business goals, and special scaling constraints..."
               required
               {...secureInputProps}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-background/80 border border-border text-foreground text-xs focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/40 transition-all resize-none placeholder:text-muted-foreground/60"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-background/80 border border-border text-foreground text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-ring transition-all resize-none placeholder:text-muted-foreground/60"
             />
           </div>
 
@@ -263,7 +263,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
                     onClick={() => setBudget(tier.value)}
                     className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-cyan-950/40 border-cyan-500/60 text-cyan-300 ring-1 ring-cyan-500/30"
+                        ? "bg-primary/10 border-primary text-primary font-semibold ring-1 ring-primary/30"
                         : "bg-background/60 border-border text-muted-foreground hover:text-foreground hover:bg-secondary/40"
                     }`}
                   >
@@ -290,7 +290,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
                     onClick={() => setExpectedTraffic(tier.value)}
                     className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-blue-950/40 border-blue-500/60 text-blue-300 ring-1 ring-blue-500/30"
+                        ? "bg-primary/10 border-primary text-primary font-semibold ring-1 ring-primary/30"
                         : "bg-background/60 border-border text-muted-foreground hover:text-foreground hover:bg-secondary/40"
                     }`}
                   >
@@ -313,14 +313,14 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
               onChange={(e) => setTechStack(e.target.value)}
               placeholder="e.g. FastAPI, Next.js, Neon PostgreSQL, Redis, Tailwind"
               {...secureInputProps}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-background/80 border border-border text-foreground text-xs focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/40 transition-all placeholder:text-muted-foreground/60"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-background/80 border border-border text-foreground text-xs focus:outline-none focus:border-primary focus:ring-1 focus:ring-ring transition-all placeholder:text-muted-foreground/60"
             />
           </div>
 
           {/* Submit Action Button */}
           <button
             type="submit"
-            className="w-full py-3 px-4 rounded-xl font-bold text-xs text-primary-foreground bg-gradient-to-r from-cyan-400 via-cyan-500 to-blue-600 hover:from-cyan-300 hover:to-blue-500 shadow-cyan-glow transition-all hover:scale-[1.01] flex items-center justify-center space-x-2 cursor-pointer"
+            className="w-full py-3 px-4 rounded-xl font-semibold text-xs text-primary-foreground bg-primary hover:bg-primary/90 shadow-sm transition-all flex items-center justify-center space-x-2 cursor-pointer"
           >
             <Sparkles className="w-4 h-4" />
             <span>Synthesize Master Architecture Blueprint</span>

@@ -96,7 +96,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className="bg-background text-foreground font-poppins min-h-screen flex flex-col antialiased selection:bg-primary/25 selection:text-primary">
+      <body className="bg-background text-foreground font-poppins min-h-screen flex flex-col antialiased selection:bg-primary/25 selection:text-primary relative bg-blueprint-grid">
         <SecurityProvider>
           <AuthProvider>
             <Navbar />

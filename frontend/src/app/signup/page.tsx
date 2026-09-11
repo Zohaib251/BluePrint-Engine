@@ -3,14 +3,17 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signupUser, signinUser } from "@/lib/api";
+import { signupUser as registerUser, signinUser } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { secureInputProps } from "@/components/SecurityProvider";
 import { Cpu, Lock, User, ArrowRight, Loader2, ShieldCheck, AlertCircle, CheckCircle2 } from "lucide-react";
 
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
 /**
  * Modern Shadcn Registration Card Block.
- * Features validation feedback, anti-inspect protection, and automated session sign-in.
+ * Includes multi-tier password verification and secure token initialization.
  */
 export default function SignUpPage() {
   const router = useRouter();
@@ -27,28 +30,29 @@ export default function SignUpPage() {
     e.preventDefault();
     setError(null);
 
-    if (username.trim().length < 3) {
-      setError("Username must be at least 3 characters long.");
+    if (!username.trim() || !password || !confirmPassword) {
+      setError("All fields are required.");
       return;
     }
-    if (password.length < 6) {
-      setError("Password must contain at least 6 characters.");
-      return;
-    }
+
     if (password !== confirmPassword) {
-      setError("Passwords do not match. Please re-enter.");
+      setError("Passwords do not match. Please verify.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters in length.");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      await signupUser(username.trim(), password);
-      await signinUser(username.trim(), password);
+      await registerUser(username.trim(), password);
       await refreshUser();
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Failed to create account. Please try a different username.");
+      setError(err.message || "Registration failed. Please try a different username.");
     } finally {
       setIsSubmitting(false);
     }
@@ -56,13 +60,10 @@ export default function SignUpPage() {
 
   return (
     <main className="max-w-md mx-auto py-12 sm:py-16 px-4">
-      <div className="rounded-3xl p-7 sm:p-9 bg-card/70 border border-border backdrop-blur-2xl shadow-2xl space-y-6 relative overflow-hidden">
-        {/* Subtle Ambient Radial Glow */}
-        <div className="absolute -top-12 -right-12 w-40 h-40 bg-blue-500/10 blur-3xl pointer-events-none" />
-
+      <Card className="p-6 sm:p-8 border-border bg-card/95 shadow-lg space-y-6">
         {/* Brand & Heading */}
         <div className="space-y-2 text-center">
-          <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 mb-2 shadow-cyan-glow">
+          <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary mb-1">
             <Cpu className="w-5 h-5" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Create Architect Account</h1>
@@ -73,20 +74,20 @@ export default function SignUpPage() {
 
         {/* Error Alert */}
         {error && (
-          <div className="bg-rose-950/40 border border-rose-600/70 text-rose-100 p-3.5 rounded-xl flex items-start space-x-2.5 text-xs animate-in fade-in">
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
-            <p className="text-rose-200/90 leading-relaxed">{error}</p>
+          <div className="bg-destructive/15 border border-destructive/30 text-destructive-foreground p-3 rounded-lg flex items-start space-x-2.5 text-xs">
+            <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+            <p className="text-foreground leading-relaxed">{error}</p>
           </div>
         )}
 
         {/* Registration Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-foreground">
+            <label className="block text-xs font-medium text-foreground">
               Username
             </label>
             <div className="relative">
-              <User className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <User className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={username}
@@ -94,17 +95,17 @@ export default function SignUpPage() {
                 placeholder="e.g. alex_architect"
                 required
                 {...secureInputProps}
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-background/80 border border-border text-foreground text-xs focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/40 transition-all placeholder:text-muted-foreground/60"
+                className="w-full pl-9 pr-3 py-2 rounded-md bg-secondary/40 border border-border text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all placeholder:text-muted-foreground"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-foreground">
+            <label className="block text-xs font-medium text-foreground">
               Password
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
                 value={password}
@@ -112,17 +113,17 @@ export default function SignUpPage() {
                 placeholder="At least 6 characters"
                 required
                 {...secureInputProps}
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-background/80 border border-border text-foreground text-xs focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/40 transition-all placeholder:text-muted-foreground/60"
+                className="w-full pl-9 pr-3 py-2 rounded-md bg-secondary/40 border border-border text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all placeholder:text-muted-foreground"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-foreground">
+            <label className="block text-xs font-medium text-foreground">
               Confirm Password
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
                 value={confirmPassword}
@@ -130,15 +131,15 @@ export default function SignUpPage() {
                 placeholder="Re-enter password"
                 required
                 {...secureInputProps}
-                className="w-full pl-10 pr-3.5 py-2.5 rounded-xl bg-background/80 border border-border text-foreground text-xs focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/40 transition-all placeholder:text-muted-foreground/60"
+                className="w-full pl-9 pr-3 py-2 rounded-md bg-secondary/40 border border-border text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all placeholder:text-muted-foreground"
               />
             </div>
           </div>
 
-          <button
+          <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3 px-4 rounded-xl font-bold text-xs text-primary-foreground bg-gradient-to-r from-cyan-400 via-cyan-500 to-blue-600 hover:from-cyan-300 hover:to-blue-500 shadow-cyan-glow transition-all hover:scale-[1.01] flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer"
+            className="w-full text-xs font-semibold py-2.5 gap-2"
           >
             {isSubmitting ? (
               <>
@@ -151,24 +152,24 @@ export default function SignUpPage() {
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
-          </button>
+          </Button>
         </form>
 
         {/* Bottom Switcher */}
         <div className="space-y-3 pt-2 text-center">
           <p className="text-xs text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/signin" className="text-cyan-400 hover:text-cyan-300 font-semibold underline underline-offset-4">
+            <Link href="/signin" className="text-primary hover:underline font-semibold">
               Sign in
             </Link>
           </p>
 
-          <div className="pt-2 border-t border-border flex items-center justify-center space-x-1.5 text-[11px] font-mono text-muted-foreground">
-            <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+          <div className="pt-3 border-t border-border flex items-center justify-center space-x-1.5 text-[11px] font-mono text-muted-foreground">
+            <ShieldCheck className="w-3.5 h-3.5 text-primary" />
             <span>5 Free Generations Included Monthly</span>
           </div>
         </div>
-      </div>
+      </Card>
     </main>
   );
 }
