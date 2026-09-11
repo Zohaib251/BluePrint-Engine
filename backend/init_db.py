@@ -1,14 +1,17 @@
 """
-Database initialization and default admin seeder module.
+Database initialization and admin account provisioning module.
 
-Creates database schema tables if missing and seeds default admin user ('ZohaibAli').
+Creates database schema tables if missing and seeds an admin user if ADMIN_USERNAME
+and ADMIN_PASSWORD environment variables are explicitly defined.
 """
 
+import os
 import logging
 from sqlalchemy import select
 from database import engine, AsyncSessionLocal, Base
 from models import User
 from security import hash_password
+from config import ENVIRONMENT
 
 # Configure logging for database setup process
 logging.basicConfig(level=logging.INFO)
@@ -17,11 +20,10 @@ logger = logging.getLogger(__name__)
 
 async def init_db() -> None:
     """
-    Initialize database schema and seed default admin user account.
+    Initialize database schema tables and provision admin user account if configured.
 
-    Creates tables if they do not exist, and checks for admin user 'ZohaibAli'.
-    If 'ZohaibAli' does not exist, creates the account with role='admin'
-    and hashed password 'hellfire123'.
+    Creates tables if they do not exist, and checks for admin credentials specified
+    via ADMIN_USERNAME and ADMIN_PASSWORD environment variables.
     """
     async with engine.begin() as conn:
         # Create all tables defined in Base metadata
@@ -30,21 +32,15 @@ async def init_db() -> None:
 
     async with AsyncSessionLocal() as session:
         try:
-            # Retrieve admin credentials from environment or secure defaults
-            import os
-            from config import ENVIRONMENT
+            # Retrieve admin credentials strictly from environment variables
+            primary_admin_user = os.getenv("ADMIN_USERNAME")
+            primary_admin_pass = os.getenv("ADMIN_PASSWORD")
 
-            primary_admin_user = os.getenv("ADMIN_USERNAME", "ZohaibAli")
-            primary_admin_pass = os.getenv("ADMIN_PASSWORD", "hellfire123")
-
-            admin_credentials = [(primary_admin_user, primary_admin_pass)]
-
-            # In development only, allow optional secondary dev admin if explicitly configured
-            if ENVIRONMENT.lower() != "production":
-                dev_admin_user = os.getenv("DEV_ADMIN_USERNAME")
-                dev_admin_pass = os.getenv("DEV_ADMIN_PASSWORD")
-                if dev_admin_user and dev_admin_pass:
-                    admin_credentials.append((dev_admin_user, dev_admin_pass))
+            admin_credentials = []
+            if primary_admin_user and primary_admin_pass:
+                admin_credentials.append((primary_admin_user.strip(), primary_admin_pass.strip()))
+            else:
+                logger.info("ADMIN_USERNAME or ADMIN_PASSWORD not configured. Skipping automated admin seeding.")
 
             for username, default_pw in admin_credentials:
                 stmt = select(User).where(User.username == username)
@@ -52,7 +48,7 @@ async def init_db() -> None:
                 user_record = result.scalar_one_or_none()
 
                 if not user_record:
-                    logger.info(f"Admin user '{username}' not found. Creating auto-admin account...")
+                    logger.info(f"Admin user '{username}' not found. Creating admin account...")
                     hashed_pw = hash_password(default_pw)
                     new_admin = User(
                         username=username,
@@ -74,5 +70,3 @@ async def init_db() -> None:
             await session.rollback()
             logger.error(f"Error seeding database admin user: {err}")
             raise
-
-

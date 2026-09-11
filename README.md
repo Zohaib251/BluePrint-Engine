@@ -173,9 +173,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=60
 GEMINI_API_KEY=AIzaSyYourGeneratedGeminiApiKeyHere
 GEMINI_MODEL=gemini-3.5-flash-lite
 
-# Optional Custom Admin Credentials
-ADMIN_USERNAME=ZohaibAli
-ADMIN_PASSWORD=hellfire123
+
 ```
 
 ```bash

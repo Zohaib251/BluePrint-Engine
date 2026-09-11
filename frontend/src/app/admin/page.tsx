@@ -76,7 +76,7 @@ export default function AdminPage() {
           <ShieldAlert className="w-8 h-8 text-rose-400 mx-auto" />
           <p className="font-semibold text-rose-400">Access Denied</p>
           <p className="text-xs text-gray-400 leading-relaxed">
-            The Admin Control Center is restricted exclusively to authorized superuser accounts (&apos;ZohaibAli&apos; / admin role).
+            The Admin Control Center is restricted exclusively to authorized superuser accounts (Admin role required).
           </p>
         </div>
         <button
