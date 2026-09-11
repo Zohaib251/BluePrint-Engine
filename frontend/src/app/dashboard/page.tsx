@@ -147,7 +147,7 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-xl font-bold text-foreground">~2.8s</span>
-            <span className="text-[10px] font-mono bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-800">
+            <span className="text-[10px] font-mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30">
               FAST
             </span>
           </div>

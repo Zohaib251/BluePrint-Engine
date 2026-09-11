@@ -647,15 +647,15 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
         <div className="flex items-center space-x-2 shrink-0">
           <button
             onClick={handleCopyMarkdown}
-            className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-secondary/80 text-foreground text-xs font-semibold hover:bg-secondary hover:text-white transition-all border border-border"
+            className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-secondary/80 text-foreground text-xs font-semibold hover:bg-secondary transition-all border border-border"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? "Copied" : "Copy MD"}</span>
           </button>
 
           <button
             onClick={handleDownloadMarkdown}
-            className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-secondary/80 text-foreground text-xs font-semibold hover:bg-secondary hover:text-white transition-all border border-border"
+            className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-secondary/80 text-foreground text-xs font-semibold hover:bg-secondary transition-all border border-border"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Download MD</span>
@@ -692,38 +692,38 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
 
       {/* 5-MODULE MASTER BLUEPRINT CONTENT */}
       {parsedContent && isFiveModuleBlueprint ? (
-        <div className="space-y-10 text-sm text-gray-300">
+        <div className="space-y-10 text-sm text-foreground">
           {/* ================= MODULE 1: PRD ================= */}
           {parsedContent.module_1_prd && (
             <section className="space-y-5">
-              <div className="flex items-center space-x-2.5 pb-2 border-b border-gray-800">
-                <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
+              <div className="flex items-center space-x-2.5 pb-2 border-b border-border">
+                <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold font-mono">
                   1
                 </span>
-                <h3 className="text-sm font-bold text-gray-100 tracking-wide uppercase font-mono">
+                <h3 className="text-sm font-bold text-foreground tracking-wide uppercase font-mono">
                   Product Requirements Document (PRD)
                 </h3>
               </div>
 
               {/* 1.1 Executive Summary */}
               <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   1.1 Executive Summary
                 </h4>
-                <div className="bg-background/90 p-5 rounded-xl border border-border leading-relaxed text-gray-200 text-xs sm:text-sm">
+                <div className="bg-card p-5 rounded-xl border border-border leading-relaxed text-foreground text-xs sm:text-sm">
                   {parsedContent.module_1_prd.executive_summary}
                 </div>
               </div>
 
               {/* 1.2 Scope Matrix */}
               <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   1.2 Scope Matrix (MVP vs. Phase 2)
                 </h4>
-                <div className="bg-background/90 rounded-xl border border-border overflow-x-auto">
+                <div className="bg-card rounded-xl border border-border overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-border text-gray-400 font-mono bg-secondary/40">
+                      <tr className="border-b border-border text-muted-foreground font-mono bg-secondary/40">
                         <th className="py-3 px-4">Feature Name</th>
                         <th className="py-3 px-4">Scope Tier</th>
                         <th className="py-3 px-4">Priority</th>
@@ -733,14 +733,14 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
                     <tbody className="divide-y divide-border">
                       {parsedContent.module_1_prd.scope_matrix.map((item, idx) => (
                         <tr key={idx} className="hover:bg-secondary/30">
-                          <td className="py-3 px-4 font-semibold text-gray-100 font-mono">
+                          <td className="py-3 px-4 font-semibold text-foreground font-mono">
                             {item.feature}
                           </td>
                           <td className="py-3 px-4">
                             <span
                               className={`inline-block px-2.5 py-0.5 rounded text-[11px] font-mono font-medium border ${
                                 item.scope.toLowerCase().includes("mvp") || item.scope.toLowerCase().includes("in-scope")
-                                  ? "bg-emerald-950 text-emerald-400 border-emerald-800"
+                                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
                                   : "bg-secondary text-secondary-foreground border-border"
                               }`}
                             >
@@ -751,14 +751,14 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
                             <span
                               className={`inline-block px-2 py-0.5 rounded text-[11px] font-mono font-bold border ${
                                 item.priority.includes("P0")
-                                  ? "bg-rose-950 text-rose-400 border-rose-800"
-                                  : "bg-amber-950 text-amber-400 border-amber-800"
+                                  ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30"
+                                  : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
                               }`}
                             >
                               {item.priority}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-gray-300 leading-relaxed">
+                          <td className="py-3 px-4 text-foreground/90 leading-relaxed">
                             {item.details}
                           </td>
                         </tr>
@@ -770,33 +770,33 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
 
               {/* 1.3 Core User Stories */}
               <div className="space-y-3">
-                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   1.3 Core User Stories & Binary Acceptance Criteria
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {parsedContent.module_1_prd.user_stories.map((story, sIdx) => (
-                    <div key={sIdx} className="bg-background/90 p-4 rounded-xl border border-border space-y-3">
+                    <div key={sIdx} className="bg-card p-4 rounded-xl border border-border space-y-3">
                       <div className="flex items-center space-x-2">
                         <span className="text-[10px] font-mono font-bold bg-secondary text-secondary-foreground px-2 py-0.5 rounded border border-border">
                           STORY {sIdx + 1}
                         </span>
-                        <span className="text-xs font-semibold text-gray-200">
+                        <span className="text-xs font-semibold text-foreground">
                           Persona: {story.user_type}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-300 leading-relaxed">
-                        <strong className="text-gray-100">Action:</strong> I want to {story.action}
+                      <p className="text-xs text-foreground/90 leading-relaxed">
+                        <strong className="text-foreground">Action:</strong> I want to {story.action}
                       </p>
-                      <p className="text-xs text-gray-400 leading-relaxed">
-                        <strong className="text-gray-300">Value:</strong> So that {story.value}
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        <strong className="text-foreground">Value:</strong> So that {story.value}
                       </p>
-                      <div className="pt-2 border-t border-gray-900 space-y-1.5">
-                        <span className="text-[11px] font-mono text-gray-400 font-semibold block">
+                      <div className="pt-2 border-t border-border space-y-1.5">
+                        <span className="text-[11px] font-mono text-muted-foreground font-semibold block">
                           Acceptance Criteria:
                         </span>
                         {story.acceptance_criteria.map((crit, cIdx) => (
-                          <div key={cIdx} className="flex items-start space-x-2 text-xs text-gray-300">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                          <div key={cIdx} className="flex items-start space-x-2 text-xs text-foreground/90">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                             <span>{crit}</span>
                           </div>
                         ))}
@@ -812,48 +812,48 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
           {parsedContent.module_2_infrastructure && (
             <section className="space-y-5">
               <div className="flex items-center space-x-2.5 pb-2 border-b border-border">
-                <span className="w-6 h-6 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-bold font-mono">
+                <span className="w-6 h-6 rounded-full bg-sky-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center text-xs font-bold font-mono">
                   2
                 </span>
-                <h3 className="text-sm font-bold text-gray-100 tracking-wide uppercase font-mono">
+                <h3 className="text-sm font-bold text-foreground tracking-wide uppercase font-mono">
                   Traffic-Driven Infrastructure & Scaling Specification
                 </h3>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* 2.1 Hosting Architecture */}
-                <div className="bg-background/90 p-5 rounded-xl border border-border space-y-3">
-                  <div className="flex items-center space-x-2 text-sky-400 font-semibold text-xs uppercase tracking-wider">
+                <div className="bg-card p-5 rounded-xl border border-border space-y-3">
+                  <div className="flex items-center space-x-2 text-sky-600 dark:text-sky-400 font-semibold text-xs uppercase tracking-wider">
                     <Server className="w-4 h-4" />
                     <span>2.1 Hosting Architecture</span>
                   </div>
-                  <p className="text-xs sm:text-sm font-semibold text-gray-100">
+                  <p className="text-xs sm:text-sm font-semibold text-foreground">
                     {parsedContent.module_2_infrastructure.hosting_architecture}
                   </p>
-                  <div className="bg-secondary/40 p-3 rounded-lg border border-border/80 text-xs text-gray-300 leading-relaxed">
-                    <strong className="text-gray-200 block mb-1">Architecture Rationale ("Why"):</strong>
+                  <div className="bg-secondary/40 p-3 rounded-lg border border-border/80 text-xs text-foreground/90 leading-relaxed">
+                    <strong className="text-foreground block mb-1">Architecture Rationale ("Why"):</strong>
                     {parsedContent.module_2_infrastructure.hosting_rationale}
                   </div>
                 </div>
 
                 {/* 2.2 Caching & CDN Strategy */}
-                <div className="bg-background/90 p-5 rounded-xl border border-border space-y-3">
-                  <div className="flex items-center space-x-2 text-amber-400 font-semibold text-xs uppercase tracking-wider">
+                <div className="bg-card p-5 rounded-xl border border-border space-y-3">
+                  <div className="flex items-center space-x-2 text-amber-600 dark:text-amber-400 font-semibold text-xs uppercase tracking-wider">
                     <Zap className="w-4 h-4" />
                     <span>2.2 Caching & Edge CDN Strategy</span>
                   </div>
-                  <p className="text-xs sm:text-sm text-gray-200 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed">
                     {parsedContent.module_2_infrastructure.caching_cdn_strategy}
                   </p>
                 </div>
 
                 {/* 2.3 Availability & Data Safety */}
-                <div className="bg-background/90 p-5 rounded-xl border border-border space-y-3 md:col-span-2">
-                  <div className="flex items-center space-x-2 text-emerald-400 font-semibold text-xs uppercase tracking-wider">
+                <div className="bg-card p-5 rounded-xl border border-border space-y-3 md:col-span-2">
+                  <div className="flex items-center space-x-2 text-emerald-600 dark:text-emerald-400 font-semibold text-xs uppercase tracking-wider">
                     <Shield className="w-4 h-4" />
                     <span>2.3 Availability SLAs, Latency Targets & Backup Frequencies</span>
                   </div>
-                  <p className="text-xs sm:text-sm text-gray-200 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed">
                     {parsedContent.module_2_infrastructure.availability_and_safety}
                   </p>
                 </div>
@@ -865,49 +865,49 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
           {parsedContent.module_3_tech_stack && (
             <section className="space-y-5">
               <div className="flex items-center space-x-2.5 pb-2 border-b border-border">
-                <span className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold font-mono">
+                <span className="w-6 h-6 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xs font-bold font-mono">
                   3
                 </span>
-                <h3 className="text-sm font-bold text-gray-100 tracking-wide uppercase font-mono">
+                <h3 className="text-sm font-bold text-foreground tracking-wide uppercase font-mono">
                   Budget-Optimized Tech Stack Selection
                 </h3>
               </div>
 
               {/* Named Tech Stack Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <div className="bg-background/90 p-4 rounded-xl border border-border space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase text-gray-400 font-semibold">Frontend Layer</span>
-                  <p className="text-xs font-bold text-gray-100">{parsedContent.module_3_tech_stack.frontend_technology}</p>
+                <div className="bg-card p-4 rounded-xl border border-border space-y-1.5">
+                  <span className="text-[10px] font-mono uppercase text-muted-foreground font-semibold">Frontend Layer</span>
+                  <p className="text-xs font-bold text-foreground">{parsedContent.module_3_tech_stack.frontend_technology}</p>
                 </div>
-                <div className="bg-background/90 p-4 rounded-xl border border-border space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase text-gray-400 font-semibold">Backend Layer</span>
-                  <p className="text-xs font-bold text-gray-100">{parsedContent.module_3_tech_stack.backend_technology}</p>
+                <div className="bg-card p-4 rounded-xl border border-border space-y-1.5">
+                  <span className="text-[10px] font-mono uppercase text-muted-foreground font-semibold">Backend Layer</span>
+                  <p className="text-xs font-bold text-foreground">{parsedContent.module_3_tech_stack.backend_technology}</p>
                 </div>
-                <div className="bg-background/90 p-4 rounded-xl border border-border space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase text-gray-400 font-semibold">Database Engine</span>
-                  <p className="text-xs font-bold text-gray-100">{parsedContent.module_3_tech_stack.database_technology}</p>
+                <div className="bg-card p-4 rounded-xl border border-border space-y-1.5">
+                  <span className="text-[10px] font-mono uppercase text-muted-foreground font-semibold">Database Engine</span>
+                  <p className="text-xs font-bold text-foreground">{parsedContent.module_3_tech_stack.database_technology}</p>
                 </div>
-                <div className="bg-background/90 p-4 rounded-xl border border-border space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase text-gray-400 font-semibold">APIs & Integrations</span>
-                  <p className="text-xs font-bold text-gray-100">{parsedContent.module_3_tech_stack.third_party_tools}</p>
+                <div className="bg-card p-4 rounded-xl border border-border space-y-1.5">
+                  <span className="text-[10px] font-mono uppercase text-muted-foreground font-semibold">APIs & Integrations</span>
+                  <p className="text-xs font-bold text-foreground">{parsedContent.module_3_tech_stack.third_party_tools}</p>
                 </div>
               </div>
 
               {/* Monthly Cost Table */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     3.2 Estimated Monthly Operational Costs
                   </h4>
-                  <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded border border-emerald-800">
+                  <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded border border-emerald-500/30">
                     Est. Total: {parsedContent.module_3_tech_stack.total_monthly_estimate}
                   </span>
                 </div>
 
-                <div className="bg-background/90 rounded-xl border border-border overflow-x-auto">
+                <div className="bg-card rounded-xl border border-border overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-border text-gray-400 font-mono bg-secondary/40">
+                      <tr className="border-b border-border text-muted-foreground font-mono bg-secondary/40">
                         <th className="py-3 px-4">Expense Category</th>
                         <th className="py-3 px-4">Recommended Service / Platform</th>
                         <th className="py-3 px-4">Estimated Monthly Cost</th>
@@ -916,13 +916,13 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
                     <tbody className="divide-y divide-border">
                       {parsedContent.module_3_tech_stack.cost_table.map((row, idx) => (
                         <tr key={idx} className="hover:bg-secondary/30">
-                          <td className="py-3 px-4 font-mono font-semibold text-gray-200">
+                          <td className="py-3 px-4 font-mono font-semibold text-foreground">
                             {row.category}
                           </td>
-                          <td className="py-3 px-4 text-gray-300">
+                          <td className="py-3 px-4 text-foreground/90">
                             {row.service_or_tool}
                           </td>
-                          <td className="py-3 px-4 font-mono font-semibold text-emerald-400">
+                          <td className="py-3 px-4 font-mono font-semibold text-emerald-600 dark:text-emerald-400">
                             {row.estimated_monthly_cost}
                           </td>
                         </tr>
@@ -930,7 +930,7 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
                       <tr className="bg-secondary/60 font-bold border-t-2 border-border text-foreground">
                         <td className="py-3 px-4 uppercase font-mono">Total Estimated Run Rate</td>
                         <td className="py-3 px-4 text-muted-foreground">Integrated Architecture</td>
-                        <td className="py-3 px-4 font-mono text-emerald-300 text-xs">
+                        <td className="py-3 px-4 font-mono text-emerald-600 dark:text-emerald-300 text-xs">
                           {parsedContent.module_3_tech_stack.total_monthly_estimate}
                         </td>
                       </tr>
@@ -945,23 +945,23 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
           {parsedContent.module_4_data_architecture && (
             <section className="space-y-6">
               <div className="flex items-center space-x-2.5 pb-2 border-b border-border">
-                <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-bold font-mono">
+                <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xs font-bold font-mono">
                   4
                 </span>
-                <h3 className="text-sm font-bold text-gray-100 tracking-wide uppercase font-mono">
+                <h3 className="text-sm font-bold text-foreground tracking-wide uppercase font-mono">
                   Information Architecture & Database Blueprint
                 </h3>
               </div>
 
               {/* 4.1 Sitemap Tree */}
               <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   4.1 System Sitemap Tree & Route Map
                 </h4>
-                <div className="bg-background/90 rounded-xl border border-border overflow-x-auto">
+                <div className="bg-card rounded-xl border border-border overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-border text-gray-400 font-mono bg-secondary/40">
+                      <tr className="border-b border-border text-muted-foreground font-mono bg-secondary/40">
                         <th className="py-3 px-4">Screen / View</th>
                         <th className="py-3 px-4">URL Route Path</th>
                         <th className="py-3 px-4">Access Level</th>
@@ -971,10 +971,10 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
                     <tbody className="divide-y divide-border">
                       {parsedContent.module_4_data_architecture.sitemap_tree.map((node, idx) => (
                         <tr key={idx} className="hover:bg-secondary/30">
-                          <td className="py-3 px-4 font-semibold text-gray-100 font-mono">
+                          <td className="py-3 px-4 font-semibold text-foreground font-mono">
                             {node.page_name}
                           </td>
-                          <td className="py-3 px-4 font-mono text-purple-400">
+                          <td className="py-3 px-4 font-mono text-purple-600 dark:text-purple-400">
                             {node.route_path}
                           </td>
                           <td className="py-3 px-4">
@@ -982,7 +982,7 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
                               {node.access_level}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-gray-300 leading-relaxed">
+                          <td className="py-3 px-4 text-foreground/90 leading-relaxed">
                             {node.key_components}
                           </td>
                         </tr>
@@ -994,12 +994,12 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
 
               {/* 4.2 Relational Entities */}
               <div className="space-y-4">
-                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   4.2 Relational Data Entities (Entity Schemas)
                 </h4>
                 <div className="grid grid-cols-1 gap-4">
                   {parsedContent.module_4_data_architecture.database_tables.map((table, idx) => (
-                    <div key={idx} className="bg-background/90 p-4 rounded-xl border border-border space-y-3">
+                    <div key={idx} className="bg-card p-4 rounded-xl border border-border space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="font-mono font-bold text-foreground text-xs bg-secondary px-3 py-1 rounded-md border border-border">
                           Table: {table.table_name}
@@ -1009,7 +1009,7 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
                       <div className="overflow-x-auto">
                         <table className="w-full text-left text-xs border-collapse">
                           <thead>
-                            <tr className="border-b border-border text-gray-400 font-mono">
+                            <tr className="border-b border-border text-muted-foreground font-mono">
                               <th className="py-2 px-3">Column Name</th>
                               <th className="py-2 px-3">Data Type</th>
                               <th className="py-2 px-3">Constraints & Relations</th>
@@ -1017,13 +1017,13 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
                           </thead>
                           <tbody className="divide-y divide-border">
                             {table.columns.map((col, cIdx) => (
-                              <tr key={cIdx} className="text-gray-300 hover:bg-secondary/30">
-                                <td className="py-2 px-3 font-mono font-medium text-gray-100 flex items-center space-x-1.5">
-                                  <Key className="w-3 h-3 text-gray-500" />
+                              <tr key={cIdx} className="text-foreground/90 hover:bg-secondary/30">
+                                <td className="py-2 px-3 font-mono font-medium text-foreground flex items-center space-x-1.5">
+                                  <Key className="w-3 h-3 text-muted-foreground" />
                                   <span>{col.name}</span>
                                 </td>
-                                <td className="py-2 px-3 font-mono text-gray-400">{col.type}</td>
-                                <td className="py-2 px-3 text-gray-300">{col.constraints}</td>
+                                <td className="py-2 px-3 font-mono text-muted-foreground">{col.type}</td>
+                                <td className="py-2 px-3 text-foreground/90">{col.constraints}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -1036,8 +1036,8 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
 
               {/* 4.3 Visual Mermaid Diagram */}
               <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center space-x-2">
-                  <Layers className="w-3.5 h-3.5 text-gray-400" />
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center space-x-2">
+                  <Layers className="w-3.5 h-3.5 text-muted-foreground" />
                   <span>4.3 Visual Architecture Flowchart (Mermaid.js)</span>
                 </h4>
                 <MermaidRenderer chart={parsedContent.module_4_data_architecture.mermaid_diagram} />
@@ -1049,29 +1049,29 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
           {parsedContent.module_5_runbook && (
             <section className="space-y-5">
               <div className="flex items-center space-x-2.5 pb-2 border-b border-border">
-                <span className="w-6 h-6 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs font-bold font-mono">
+                <span className="w-6 h-6 rounded-full bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xs font-bold font-mono">
                   5
                 </span>
-                <h3 className="text-sm font-bold text-gray-100 tracking-wide uppercase font-mono">
+                <h3 className="text-sm font-bold text-foreground tracking-wide uppercase font-mono">
                   Step-by-Step Developer Runbook
                 </h3>
               </div>
 
               <div className="space-y-4">
                 {parsedContent.module_5_runbook.milestones.map((phase, pIdx) => (
-                  <div key={pIdx} className="bg-background/90 p-5 rounded-xl border border-border space-y-3">
+                  <div key={pIdx} className="bg-card p-5 rounded-xl border border-border space-y-3">
                     <div className="flex items-center space-x-2.5">
                       <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-secondary text-secondary-foreground border border-border">
                         PHASE {phase.phase_number || pIdx + 1}
                       </span>
-                      <h4 className="text-xs sm:text-sm font-bold text-gray-100 font-mono">
+                      <h4 className="text-xs sm:text-sm font-bold text-foreground font-mono">
                         {phase.phase_name}
                       </h4>
                     </div>
                     <ul className="space-y-2 pt-1">
                       {phase.execution_tasks.map((task, tIdx) => (
-                        <li key={tIdx} className="flex items-start space-x-2.5 text-xs text-gray-300">
-                          <span className="font-mono text-gray-500 shrink-0 select-none">
+                        <li key={tIdx} className="flex items-start space-x-2.5 text-xs text-foreground/90">
+                          <span className="font-mono text-muted-foreground shrink-0 select-none">
                             {tIdx + 1}.
                           </span>
                           <span className="leading-relaxed">{task}</span>
@@ -1086,22 +1086,22 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
         </div>
       ) : (
         /* Legacy Backward-Compatibility View */
-        <div className="space-y-6 text-sm text-gray-300">
+        <div className="space-y-6 text-sm text-foreground/90">
           {parsedContent ? (
             <>
               {parsedContent.architecture_overview && (
                 <section className="space-y-3">
-                  <h3 className="text-xs font-mono uppercase font-bold text-gray-400">
+                  <h3 className="text-xs font-mono uppercase font-bold text-muted-foreground">
                     System Architecture Overview
                   </h3>
-                  <div className="bg-background/90 p-5 rounded-xl border border-border leading-relaxed text-gray-300">
+                  <div className="bg-card p-5 rounded-xl border border-border leading-relaxed text-foreground">
                     {parsedContent.architecture_overview}
                   </div>
                 </section>
               )}
               {parsedContent.mermaid_diagram && (
                 <section className="space-y-3">
-                  <h3 className="text-xs font-mono uppercase font-bold text-gray-400">
+                  <h3 className="text-xs font-mono uppercase font-bold text-muted-foreground">
                     Architecture Diagram
                   </h3>
                   <MermaidRenderer chart={parsedContent.mermaid_diagram} />
@@ -1109,16 +1109,16 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
               )}
               {parsedContent.database_tables && (
                 <section className="space-y-4">
-                  <h3 className="text-xs font-mono uppercase font-bold text-gray-400">
+                  <h3 className="text-xs font-mono uppercase font-bold text-muted-foreground">
                     Database Schema Definitions
                   </h3>
                   <div className="grid grid-cols-1 gap-4">
                     {parsedContent.database_tables.map((table, idx) => (
-                      <div key={idx} className="bg-background/90 p-4 rounded-xl border border-border space-y-3">
-                        <span className="font-mono font-bold text-gray-100 text-xs">
+                      <div key={idx} className="bg-card p-4 rounded-xl border border-border space-y-3">
+                        <span className="font-mono font-bold text-foreground text-xs">
                           Table: {table.table_name}
                         </span>
-                        <p className="text-xs text-gray-400">{table.description}</p>
+                        <p className="text-xs text-muted-foreground">{table.description}</p>
                       </div>
                     ))}
                   </div>
@@ -1126,7 +1126,7 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
               )}
             </>
           ) : (
-            <pre className="bg-background/90 p-4 rounded-lg border border-border text-xs font-mono text-gray-300 overflow-x-auto">
+            <pre className="bg-card p-4 rounded-lg border border-border text-xs font-mono text-foreground overflow-x-auto">
               {prd.content}
             </pre>
           )}

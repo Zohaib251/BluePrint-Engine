@@ -134,11 +134,11 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
 
       {/* Error Alert */}
       {error && (
-        <div className="bg-rose-950/40 border border-rose-600/70 text-rose-100 p-3.5 rounded-xl flex items-start space-x-3 text-xs animate-in fade-in">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+        <div className="bg-destructive/10 border border-destructive/30 text-destructive p-3.5 rounded-xl flex items-start space-x-3 text-xs animate-in fade-in">
+          <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
           <div className="space-y-0.5">
-            <span className="font-semibold text-rose-300">Generation Notice</span>
-            <p className="text-rose-200/90 leading-relaxed">{error}</p>
+            <span className="font-semibold text-destructive">Generation Notice</span>
+            <p className="text-destructive/90 leading-relaxed">{error}</p>
           </div>
         </div>
       )}

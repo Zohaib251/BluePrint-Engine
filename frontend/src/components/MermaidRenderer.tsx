@@ -31,12 +31,14 @@ export default function MermaidRenderer({ chart }: MermaidRendererProps) {
       cleanedChart = `graph TD\n${cleanedChart}`;
     }
 
-    // Initialize Mermaid configuration for high-contrast dark theme with strict XSS protection
+    const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+
+    // Initialize Mermaid configuration dynamically adapting to light/dark themes
     mermaid.initialize({
       startOnLoad: false,
-      theme: "dark",
+      theme: isDark ? "dark" : "default",
       securityLevel: "strict",
-      fontFamily: "var(--font-poppins)",
+      fontFamily: "var(--font-inter), sans-serif",
     });
 
     const renderChart = async () => {
@@ -57,8 +59,23 @@ export default function MermaidRenderer({ chart }: MermaidRendererProps) {
 
     renderChart();
 
+    // Listen for theme attribute mutations on <html>
+    const observer = new MutationObserver(() => {
+      if (isMounted) {
+        renderChart();
+      }
+    });
+
+    if (typeof document !== "undefined") {
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+    }
+
     return () => {
       isMounted = false;
+      observer.disconnect();
     };
   }, [chart]);
 
