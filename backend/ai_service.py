@@ -100,32 +100,34 @@ async def generate_prd_from_brief(brief: str, title: str) -> PRDResponseSchema:
     # Ensure SDK is configured with active API key and reliable REST transport
     genai.configure(api_key=api_key, transport="rest")
 
-    # Candidate models list in priority order (strictly use flash-lite models with high free-tier quotas)
+    # Candidate models list in priority order (strictly use lightest flash-lite models)
     configured_model = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
     candidate_models = [configured_model] if configured_model else []
-    for m in ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.5-flash"]:
+    for m in ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]:
         if m not in candidate_models:
             candidate_models.append(m)
 
-    # Construct structured prompt instructing AI on architecture, DB, routes, and Mermaid diagram
+    # Construct concise structured prompt to minimize token consumption and generation time
     prompt = f"""
-You are a Senior Technical Architect. Generate a complete Product Requirement Document (PRD) for:
+You are a Senior Technical Architect. Generate a concise, production-ready Product Requirement Document (PRD) for:
 
 Title: {title}
 Brief: {brief}
 
-Requirements:
-1. Provide a detailed 'architecture_overview' explaining core design decisions.
-2. Provide a list of 'database_tables' with table names, descriptions, and column schemas (name, type, constraints).
-3. Provide a list of 'api_routes' with HTTP methods, paths, and functional summaries.
-4. Provide a 'mermaid_diagram' containing strictly valid Mermaid.js graph code (e.g. starting with `graph TD`).
+Guidelines:
+1. Provide a concise 'architecture_overview' (2-3 focused paragraphs).
+2. Provide 'database_tables' limited to 3-4 essential relational tables with clean column definitions.
+3. Provide 'api_routes' limited to 5-8 essential core endpoints.
+4. Provide a clean 'mermaid_diagram' starting with `graph TD`.
+Be precise, direct, and avoid redundant filler.
 """
 
-    # Enforce application/json response MIME type and Pydantic schema structure
+    # Enforce application/json response MIME type, Pydantic schema structure, and strict token limits
     generation_config = GenerationConfig(
         response_mime_type="application/json",
         response_schema=PRDResponseSchema,
-        temperature=0.7,
+        temperature=0.2,
+        max_output_tokens=2048,
     )
 
     last_error = None

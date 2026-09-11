@@ -16,6 +16,8 @@ from sqlalchemy.orm import DeclarativeBase
 from dotenv import load_dotenv
 
 # Ensure environment variables are loaded
+dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(dotenv_path)
 load_dotenv()
 
 # Retrieve Database URL from environment with fallback for local dev

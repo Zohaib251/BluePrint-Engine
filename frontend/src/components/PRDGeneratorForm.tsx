@@ -64,7 +64,9 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
       setProjectIdea("");
       setTechStack("");
     } catch (err: any) {
-      if (err.status === 429 || (err.message && (err.message.includes("429") || err.message.toLowerCase().includes("quota")))) {
+      if (err.message && err.message.toLowerCase().includes("monthly generation quota")) {
+        setError(err.message);
+      } else if (err.status === 429 || (err.message && (err.message.includes("429") || err.message.toLowerCase().includes("quota")))) {
         setError("AI generation is currently experiencing high demand. Please try again in 1 minute.");
       } else {
         setError(err.message || "Failed to generate PRD blueprint. Please try again.");
