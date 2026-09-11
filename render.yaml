@@ -1,24 +1,48 @@
 services:
-  # Backend FastAPI Web Service Configuration
+  # ============================================================================
+  # BACKEND SERVICE (FastAPI Python Application)
+  # ============================================================================
   - type: web
     name: blueprint-engine-backend
     env: python
+    region: oregon
+    plan: free
+    branch: master
+    rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    rootDir: backend
     envVars:
       - key: ENVIRONMENT
         value: production
+      - key: PORT
+        value: 10000
       - key: CORS_ORIGINS
+        value: http://localhost:3000,https://blueprint-engine-frontend.onrender.com
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 60
+      - key: GEMINI_API_KEY
         sync: false
 
-  # Frontend Next.js Web Service Configuration
+  # ============================================================================
+  # FRONTEND SERVICE (Next.js Node Application)
+  # ============================================================================
   - type: web
     name: blueprint-engine-frontend
     env: node
+    region: oregon
+    plan: free
+    branch: master
+    rootDir: frontend
     buildCommand: npm install && npm run build
     startCommand: npm start
-    rootDir: frontend
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: NEXT_PUBLIC_API_URL
-        sync: false
+        value: https://blueprint-engine-backend.onrender.com

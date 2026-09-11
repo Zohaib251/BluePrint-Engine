@@ -6,7 +6,6 @@ PRD history CRUD, admin analytics, and background 30-day data pruning tasks.
 Requires Python 3.10+ and virtual environment execution.
 """
 
-import os
 import asyncio
 from contextlib import asynccontextmanager
 from typing import Dict, AsyncGenerator
@@ -14,17 +13,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from dotenv import load_dotenv
 
+from config import CORS_ORIGINS, ENVIRONMENT
 from init_db import init_db
 from limiter import limiter
 from pruning import start_pruning_background_loop
 from routers.auth import router as auth_router
 from routers.prd import router as prd_router
 from routers.admin import router as admin_router
-
-# Load environment variables from .env file
-load_dotenv()
 
 
 @asynccontextmanager
@@ -63,14 +59,10 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Parse allowed CORS origins from environment configuration
-raw_cors = os.getenv("CORS_ORIGINS", "http://localhost:3000")
-allowed_origins = [origin.strip() for origin in raw_cors.split(",")]
-
-# Attach Cross-Origin Resource Sharing (CORS) Middleware
+# Attach Cross-Origin Resource Sharing (CORS) Middleware from centralized config
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -93,5 +85,6 @@ async def health_check() -> Dict[str, str]:
     return {
         "status": "operational",
         "service": "Blueprint Engine Backend",
-        "environment": os.getenv("ENVIRONMENT", "development"),
+        "environment": ENVIRONMENT,
+        "cors_origins": CORS_ORIGINS,
     }
