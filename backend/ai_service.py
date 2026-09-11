@@ -11,7 +11,10 @@ import google.generativeai as genai
 from google.generativeai.types import GenerationConfig
 from dotenv import load_dotenv
 
-from schemas import PRDResponseSchema
+try:
+    from schemas import PRDResponseSchema
+except ImportError:
+    from backend.schemas import PRDResponseSchema
 
 # Load environment variables
 load_dotenv()
