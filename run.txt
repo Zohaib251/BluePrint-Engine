@@ -1,0 +1,5 @@
+# Backend Server (Execute from ./backend folder with venv activated)
+uvicorn main:app --reload --port 8000
+
+# Frontend Server (Execute from ./frontend folder)
+npm run dev

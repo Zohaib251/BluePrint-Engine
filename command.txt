@@ -1,0 +1,24 @@
+# ==============================================================================
+# BLUEPRINT ENGINE MONOREPO SETUP COMMAND LOG
+# ==============================================================================
+
+# Step 1: Initialize Git Repository
+# Folder: f:\Local Work\Blueprint Engine (Root Directory)
+git init
+
+# Step 2: Set up Backend Python Virtual Environment (venv) & Dependencies
+# Folder: f:\Local Work\Blueprint Engine\backend
+python -m venv venv
+
+# Activate Virtual Environment (Windows PowerShell / CMD):
+.\venv\Scripts\activate
+
+# Activate Virtual Environment (Linux / macOS):
+# source venv/bin/activate
+
+# Install Python backend dependencies inside active venv
+pip install -r requirements.txt
+
+# Step 3: Set up Frontend Node Dependencies
+# Folder: f:\Local Work\Blueprint Engine\frontend
+npm install

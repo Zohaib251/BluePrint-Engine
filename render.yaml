@@ -1,0 +1,24 @@
+services:
+  # Backend FastAPI Web Service Configuration
+  - type: web
+    name: blueprint-engine-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    rootDir: backend
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: CORS_ORIGINS
+        sync: false
+
+  # Frontend Next.js Web Service Configuration
+  - type: web
+    name: blueprint-engine-frontend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    rootDir: frontend
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
