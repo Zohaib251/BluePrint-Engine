@@ -5,12 +5,25 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { getAdminAnalytics, triggerManualPruning, AdminAnalytics } from "@/lib/api";
 import RetentionBanner from "@/components/RetentionBanner";
-import { Users, Database, Layers, ArrowLeftRight, Trash2, RefreshCw, CheckCircle2, ShieldAlert } from "lucide-react";
+import {
+  Users,
+  Database,
+  Layers,
+  ArrowLeftRight,
+  Trash2,
+  RefreshCw,
+  CheckCircle2,
+  ShieldAlert,
+  ShieldCheck,
+  Search,
+  Cpu,
+  Clock,
+  Activity
+} from "lucide-react";
 
 /**
- * Admin Panel Component.
- * Protected strictly for user.role == 'admin'.
- * Renders real-time platform analytics table and manual 30-day data pruning trigger.
+ * Modern Shadcn Superuser Admin Control Center Block.
+ * Features real-time KPI metrics, searchable user directory table, and on-demand pruning controls.
  */
 export default function AdminPage() {
   const router = useRouter();
@@ -21,6 +34,7 @@ export default function AdminPage() {
   const [isPruning, setIsPruning] = useState<boolean>(false);
   const [pruneResult, setPruneResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const fetchAnalytics = useCallback(async () => {
     setIsFetchingAnalytics(true);
@@ -53,7 +67,7 @@ export default function AdminPage() {
     try {
       const res = await triggerManualPruning();
       setPruneResult(`Pruning finished: ${res.deleted_count} expired PRD record(s) deleted.`);
-      await fetchAnalytics(); // Refresh analytics table after pruning
+      await fetchAnalytics();
     } catch (err: any) {
       alert(err.message || "Failed to execute manual pruning.");
     } finally {
@@ -61,179 +75,217 @@ export default function AdminPage() {
     }
   };
 
+  const filteredUsers = analytics?.users.filter((u) =>
+    u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    u.role.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
   if (isAuthLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh] text-xs font-mono text-gray-400">
-        Authenticating superuser session...
+      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-3">
+        <Cpu className="w-5 h-5 text-cyan-400 animate-spin" />
+        <p className="text-xs font-mono text-muted-foreground">Authenticating admin session...</p>
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <main className="max-w-md mx-auto py-12 text-center space-y-4">
-        <div className="p-5 bg-gray-900 border border-gray-800 rounded-xl text-gray-200 text-sm space-y-2">
-          <ShieldAlert className="w-8 h-8 text-rose-400 mx-auto" />
-          <p className="font-semibold text-rose-400">Access Denied</p>
-          <p className="text-xs text-gray-400 leading-relaxed">
+      <main className="max-w-md mx-auto py-16 text-center space-y-4">
+        <div className="p-7 rounded-3xl bg-card/70 border border-border backdrop-blur-xl shadow-2xl text-center space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mx-auto">
+            <ShieldAlert className="w-6 h-6" />
+          </div>
+          <h2 className="text-base font-bold text-foreground">Superuser Access Restricted</h2>
+          <p className="text-xs text-muted-foreground leading-relaxed">
             The Admin Control Center is restricted exclusively to authorized superuser accounts (Admin role required).
           </p>
+          <div className="pt-2">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="px-5 py-2.5 rounded-xl bg-secondary text-foreground text-xs font-semibold hover:bg-secondary/80 border border-border transition-colors cursor-pointer"
+            >
+              Return to Studio Dashboard
+            </button>
+          </div>
         </div>
-        <button
-          onClick={() => router.push("/dashboard")}
-          className="px-4 py-2 bg-gray-100 text-gray-950 font-semibold text-xs rounded-lg hover:bg-gray-300 transition-colors"
-        >
-          Back to User Dashboard
-        </button>
       </main>
     );
   }
 
   return (
-    <main className="space-y-8">
-      {/* Top Bar with Title, Admin Badge, and View Toggle */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-800 pb-4">
-        <div>
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold text-gray-100">Superuser Admin Panel</h1>
-            <span className="text-xs font-mono bg-emerald-950 text-emerald-400 border border-emerald-800 px-2.5 py-0.5 rounded-full font-semibold">
+    <main className="space-y-8 py-2">
+      {/* Top Header & Admin Action Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2.5">
+            <h1 className="text-2xl font-extrabold text-foreground tracking-tight">Admin Control Center</h1>
+            <span className="text-[10px] font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 px-2.5 py-0.5 rounded-full font-bold">
               SUPERADMIN
             </span>
           </div>
-          <p className="text-xs text-gray-400 mt-1">
-            Real-time platform analytics, registered users directory, and manual database maintenance.
+          <p className="text-xs text-muted-foreground">
+            Platform metrics, registered user directory, and manual database lifecycle controls.
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
-          {/* Manual Pruning Trigger Button */}
+        <div className="flex items-center space-x-2.5">
+          {/* Manual Pruning Action Button */}
           <button
             onClick={handleManualPrune}
             disabled={isPruning}
-            className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-lg bg-gray-900 border border-gray-700 text-rose-400 hover:bg-gray-800 hover:text-rose-300 transition-colors text-xs font-semibold disabled:opacity-50"
+            className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-rose-950/30 border border-rose-800/50 text-rose-300 hover:bg-rose-900/40 hover:text-rose-100 transition-colors text-xs font-semibold disabled:opacity-50 cursor-pointer"
           >
             {isPruning ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-            <span>{isPruning ? "Pruning Database..." : "Run 30-Day Pruning Now"}</span>
+            <span>{isPruning ? "Pruning Database..." : "Execute 30-Day TTL Pruning"}</span>
           </button>
 
-          {/* Switch to User View Toggle Button */}
+          {/* Switch to User Studio */}
           <button
             onClick={() => router.push("/dashboard")}
-            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-lg bg-gray-100 text-gray-950 text-xs font-semibold hover:bg-gray-300 transition-colors shadow"
+            className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-primary-foreground text-xs font-bold shadow-cyan-glow hover:from-cyan-300 hover:to-blue-400 transition-all cursor-pointer"
           >
             <ArrowLeftRight className="w-3.5 h-3.5" />
-            <span>Switch to User View</span>
+            <span>Studio View</span>
           </button>
         </div>
       </div>
 
-      {/* Admin Permanent Data Retention Privilege Banner */}
+      {/* Admin Exemption Banner */}
       <RetentionBanner isAdmin={true} />
 
+      {/* Prune Feedback Alert */}
       {pruneResult && (
-        <div className="bg-gray-900 border border-emerald-800 p-4 rounded-xl flex items-center space-x-2 text-xs text-emerald-400">
-          <CheckCircle2 className="w-4 h-4 shrink-0" />
+        <div className="bg-emerald-950/30 border border-emerald-800/60 p-4 rounded-2xl flex items-center space-x-2 text-xs text-emerald-300 animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
           <span>{pruneResult}</span>
         </div>
       )}
 
       {error && (
-        <div className="bg-gray-900 border border-rose-800 p-4 rounded-xl text-xs text-rose-400">
+        <div className="bg-rose-950/40 border border-rose-800/60 p-4 rounded-2xl text-xs text-rose-300">
           {error}
         </div>
       )}
 
       {/* Analytics KPI Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div className="bg-gray-900 border border-gray-800 p-5 rounded-xl space-y-2">
-          <div className="flex items-center justify-between text-gray-400">
-            <span className="text-xs font-semibold">Total Registered Users</span>
-            <Users className="w-4 h-4 text-gray-300" />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div className="p-5 rounded-2xl bg-card/70 border border-border space-y-2">
+          <div className="flex items-center justify-between text-muted-foreground text-xs">
+            <span>Total Registered Users</span>
+            <Users className="w-4 h-4 text-cyan-400" />
           </div>
-          <p className="text-2xl font-bold text-gray-100 font-mono">
+          <p className="text-2xl font-bold text-foreground font-mono">
             {isFetchingAnalytics ? "..." : analytics?.total_users || 0}
           </p>
-          <p className="text-[11px] text-gray-500 font-mono">Platform User Accounts</p>
+          <p className="text-[11px] text-muted-foreground font-mono">Active account records in PostgreSQL</p>
         </div>
 
-        <div className="bg-gray-900 border border-gray-800 p-5 rounded-xl space-y-2">
-          <div className="flex items-center justify-between text-gray-400">
-            <span className="text-xs font-semibold">Total PRDs Generated</span>
-            <Database className="w-4 h-4 text-gray-300" />
+        <div className="p-5 rounded-2xl bg-card/70 border border-border space-y-2">
+          <div className="flex items-center justify-between text-muted-foreground text-xs">
+            <span>Total Generated Blueprints</span>
+            <Database className="w-4 h-4 text-blue-400" />
           </div>
-          <p className="text-2xl font-bold text-gray-100 font-mono">
+          <p className="text-2xl font-bold text-foreground font-mono">
             {isFetchingAnalytics ? "..." : analytics?.total_prds || 0}
           </p>
-          <p className="text-[11px] text-gray-500 font-mono">Total System Architectures</p>
+          <p className="text-[11px] text-muted-foreground font-mono">Synthesized 5-module documents</p>
         </div>
 
-        <div className="bg-gray-900 border border-gray-800 p-5 rounded-xl space-y-2">
-          <div className="flex items-center justify-between text-gray-400">
-            <span className="text-xs font-semibold">Automated Pruning Status</span>
+        <div className="p-5 rounded-2xl bg-card/70 border border-border space-y-2">
+          <div className="flex items-center justify-between text-muted-foreground text-xs">
+            <span>Automated TTL Pruning Loop</span>
             <Layers className="w-4 h-4 text-emerald-400" />
           </div>
-          <p className="text-2xl font-bold text-emerald-400 font-mono">Active (24h Loop)</p>
-          <p className="text-[11px] text-gray-500 font-mono">Exempts Admin Accounts</p>
+          <p className="text-2xl font-bold text-emerald-400 font-mono">Active (24h Interval)</p>
+          <p className="text-[11px] text-muted-foreground font-mono">Admin accounts permanently exempt</p>
         </div>
       </div>
 
-      {/* Registered Users Directory Data Table */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4 shadow-2xl">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-gray-100">Registered Platform Users Directory</h2>
-          <button
-            onClick={fetchAnalytics}
-            className="text-xs text-gray-400 hover:text-gray-200 transition-colors flex items-center space-x-1"
-          >
-            <RefreshCw className="w-3 h-3" />
-            <span>Refresh Directory</span>
-          </button>
+      {/* Registered Users Directory Data Table Block */}
+      <div className="rounded-2xl p-6 bg-card/70 border border-border space-y-5 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-bold text-foreground">Registered User Directory</h2>
+            <p className="text-xs text-muted-foreground">List of all authenticated accounts and quota usages</p>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            {/* Table Search Input */}
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search username or role..."
+                className="pl-8 pr-3 py-1.5 rounded-lg bg-background/80 border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-cyan-500/50"
+              />
+            </div>
+
+            <button
+              onClick={fetchAnalytics}
+              disabled={isFetchingAnalytics}
+              className="px-3 py-1.5 rounded-lg bg-secondary text-xs text-muted-foreground hover:text-foreground border border-border transition-colors flex items-center space-x-1 cursor-pointer"
+            >
+              <RefreshCw className={`w-3 h-3 ${isFetchingAnalytics ? "animate-spin" : ""}`} />
+              <span>Refresh</span>
+            </button>
+          </div>
         </div>
 
         {isFetchingAnalytics ? (
-          <div className="text-center py-8 text-xs font-mono text-gray-500">
-            Fetching user analytics...
+          <div className="text-center py-10 text-xs font-mono text-muted-foreground">
+            Loading user directory...
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-border/80">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-gray-800 text-gray-400 font-mono">
-                  <th className="py-3 px-4">User ID</th>
-                  <th className="py-3 px-4">Username</th>
-                  <th className="py-3 px-4">Role</th>
-                  <th className="py-3 px-4">Generations Used</th>
-                  <th className="py-3 px-4">Registered Date</th>
+                <tr className="border-b border-border bg-secondary/60 text-muted-foreground font-mono text-[11px]">
+                  <th className="py-3 px-4 font-semibold">User ID</th>
+                  <th className="py-3 px-4 font-semibold">Username</th>
+                  <th className="py-3 px-4 font-semibold">Role</th>
+                  <th className="py-3 px-4 font-semibold">Generations Used</th>
+                  <th className="py-3 px-4 font-semibold">Registered Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800">
-                {analytics?.users.map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-900/50">
-                    <td className="py-3 px-4 font-mono text-gray-500">{u.id.substring(0, 8)}...</td>
-                    <td className="py-3 px-4 font-medium text-gray-200">{u.username}</td>
-                    <td className="py-3 px-4">
-                      {u.role === "admin" ? (
-                        <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">
-                          ADMIN
-                        </span>
-                      ) : (
-                        <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-gray-800 text-gray-300 border border-gray-700">
-                          USER
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 font-mono">
-                      {u.role === "admin" ? (
-                        <span className="text-emerald-400 font-semibold">Unlimited ({u.generation_count})</span>
-                      ) : (
-                        <span className="text-gray-300">{u.generation_count} / 5</span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 font-mono text-gray-400">
-                      {new Date(u.created_at).toLocaleDateString()}
+              <tbody className="divide-y divide-border/60 text-muted-foreground">
+                {filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-xs font-mono text-muted-foreground">
+                      No matching users found in directory.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredUsers.map((u) => (
+                    <tr key={u.id} className="hover:bg-secondary/30 transition-colors">
+                      <td className="py-3 px-4 font-mono text-muted-foreground/80">{u.id.substring(0, 8)}...</td>
+                      <td className="py-3 px-4 font-medium text-foreground">{u.username}</td>
+                      <td className="py-3 px-4">
+                        {u.role === "admin" ? (
+                          <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">
+                            ADMIN
+                          </span>
+                        ) : (
+                          <span className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-secondary text-muted-foreground border border-border">
+                            USER
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 font-mono">
+                        {u.role === "admin" ? (
+                          <span className="text-emerald-400 font-semibold">Unlimited ({u.generation_count})</span>
+                        ) : (
+                          <span className="text-foreground">{u.generation_count} / 5</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 font-mono">
+                        {new Date(u.created_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

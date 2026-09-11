@@ -2,23 +2,52 @@
 
 import React, { useState } from "react";
 import { generatePRD, PRDHistory } from "@/lib/api";
-import { Sparkles, Loader2, AlertCircle, Layers, Database, Cpu, ShieldCheck } from "lucide-react";
+import {
+  Sparkles,
+  Loader2,
+  AlertCircle,
+  Layers,
+  Database,
+  Cpu,
+  ShieldCheck,
+  Zap,
+  SlidersHorizontal,
+  Lightbulb,
+  Check
+} from "lucide-react";
 import { secureInputProps } from "@/components/SecurityProvider";
 
 interface PRDGeneratorFormProps {
   onSuccess: (newPrd: PRDHistory) => void;
 }
 
+const BUDGET_TIERS = [
+  { label: "Bootstrap ($0 - $50/mo)", value: "Low / Bootstrap ($0 - $50/mo)", desc: "BaaS & Serverless free tiers" },
+  { label: "Scale ($50 - $500/mo)", value: "Moderate Scale ($50 - $500/mo)", desc: "Managed PostgreSQL & VPS" },
+  { label: "Enterprise ($500+/mo)", value: "High Enterprise ($500+/mo)", desc: "Auto-scaling HA clusters" },
+];
+
+const TRAFFIC_TIERS = [
+  { label: "< 10k MAU", value: "MVP / Growth (< 10,000 MAU)", desc: "Single server / edge caching" },
+  { label: "10k - 100k MAU", value: "Medium Scale (10,000 - 100,000 MAU)", desc: "Redis cache & DB read replica" },
+  { label: "100k+ MAU", value: "High Concurrency (100,000+ MAU)", desc: "Distributed clusters & CDN" },
+];
+
+const QUICK_IDEAS = [
+  { title: "SaaS Analytics Engine", tech: "FastAPI, Next.js, Neon Postgres, Redis" },
+  { title: "Real-time Whiteboard", tech: "WebSockets, Node.js, Canvas API, Redis" },
+  { title: "FinTech Payments API", tech: "FastAPI, PostgreSQL, Stripe, Docker" },
+];
+
 /**
- * PRDGeneratorForm Component.
- * Modern, client-side generative form with inputs for Project Idea, Budget, Traffic, and Tech Stack.
- * Renders a dynamic skeleton loader during Gemini 1.5 Flash AI synthesis.
+ * Shadcn-styled Architectural Studio Generator Block.
+ * Features segmented selectors, quick inspiration chips, anti-tamper inputs, and live loading stages.
  */
 export default function PRDGeneratorForm({ onSuccess }: PRDGeneratorFormProps) {
   const [title, setTitle] = useState<string>("");
   const [projectIdea, setProjectIdea] = useState<string>("");
-  const [budget, setBudget] = useState<string>("Low / Bootstrap ($0 - $50/mo)");
-  const [expectedTraffic, setExpectedTraffic] = useState<string>("MVP / Growth (< 10,000 MAU)");
+  const [budget, setBudget] = useState<string>(BUDGET_TIERS[0].value);
+  const [expectedTraffic, setExpectedTraffic] = useState<string>(TRAFFIC_TIERS[0].value);
   const [techStack, setTechStack] = useState<string>("");
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
@@ -41,7 +70,6 @@ export default function PRDGeneratorForm({ onSuccess }: PRDGeneratorFormProps) {
 
     setIsGenerating(true);
 
-    // Combine form parameters into structured prompt brief
     const fullBrief = `
 PROJECT IDEA:
 ${projectIdea.trim()}
@@ -65,7 +93,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
       );
       onSuccess(newPrd);
 
-      // Reset form on success
+      // Reset fields
       setTitle("");
       setProjectIdea("");
       setTechStack("");
@@ -75,7 +103,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
       } else if (err.status === 429 || (err.message && (err.message.includes("429") || err.message.toLowerCase().includes("quota")))) {
         setError("AI generation is currently experiencing high demand. Please try again in 1 minute.");
       } else {
-        setError(err.message || "Failed to generate PRD blueprint. Please try again.");
+        setError(err.message || "Failed to synthesize architecture blueprint. Please try again.");
       }
     } finally {
       setIsGenerating(false);
@@ -83,88 +111,87 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
   };
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-6 shadow-2xl">
-      <div className="flex items-center justify-between border-b border-gray-800 pb-4">
-        <h2 className="text-base font-bold text-gray-100 flex items-center space-x-2">
-          <Sparkles className="w-4 h-4 text-gray-300" />
-          <span>Master Architecture Blueprint</span>
-        </h2>
+    <div className="rounded-2xl p-6 sm:p-7 bg-card/70 border border-border backdrop-blur-xl shadow-xl space-y-6">
+      {/* Studio Header */}
+      <div className="flex items-center justify-between border-b border-border/80 pb-4">
+        <div className="flex items-center space-x-2.5">
+          <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+            <SlidersHorizontal className="w-4 h-4" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-foreground">Architecture Studio</h2>
+            <p className="text-[11px] text-muted-foreground">Configure specifications for 5-module synthesis</p>
+          </div>
+        </div>
+
         <div className="flex items-center space-x-2">
-          <span className="text-[10px] font-mono bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-2 py-0.5 rounded flex items-center space-x-1">
+          <span className="text-[10px] font-mono bg-cyan-950/80 text-cyan-400 border border-cyan-800/80 px-2 py-0.5 rounded flex items-center space-x-1">
             <ShieldCheck className="w-3 h-3" />
-            <span>ANTI-TAMPER</span>
-          </span>
-          <span className="text-[11px] font-mono bg-gray-800 text-gray-300 px-2.5 py-1 rounded border border-gray-700">
-            5-MODULE ARCHITECT
+            <span>PROTECTED</span>
           </span>
         </div>
       </div>
 
+      {/* Error Alert */}
       {error && (
-        <div className="bg-rose-950/40 border-2 border-rose-600/80 text-rose-100 p-4 rounded-xl flex items-start space-x-3.5 shadow-xl ring-1 ring-rose-500/30 transition-all">
-          <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <h4 className="text-xs font-bold text-rose-300 tracking-wider uppercase">
-              {error.includes("high demand") || error.includes("Rate Limit")
-                ? "Rate Limit / High Demand Notice"
-                : "Generation Error"}
-            </h4>
-            <p className="text-sm font-medium leading-relaxed text-rose-100">
-              {error}
-            </p>
+        <div className="bg-rose-950/40 border border-rose-600/70 text-rose-100 p-3.5 rounded-xl flex items-start space-x-3 text-xs animate-in fade-in">
+          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <span className="font-semibold text-rose-300">Generation Notice</span>
+            <p className="text-rose-200/90 leading-relaxed">{error}</p>
           </div>
         </div>
       )}
 
       {isGenerating ? (
-        /* Dynamic "Building Master Blueprint..." Skeleton Loader */
-        <div className="bg-gray-950 border border-gray-800 rounded-xl p-6 space-y-5 animate-pulse">
-          <div className="flex items-center space-x-3 text-gray-300">
-            <Loader2 className="w-5 h-5 text-gray-100 animate-spin" />
+        /* Dynamic Synthesis Progress Screen */
+        <div className="rounded-xl p-6 border border-cyan-500/30 bg-background/60 space-y-5">
+          <div className="flex items-center space-x-3">
+            <Loader2 className="w-5 h-5 text-cyan-400 animate-spin" />
             <div>
-              <h3 className="text-sm font-semibold text-gray-100">Synthesizing Master Blueprint...</h3>
-              <p className="text-xs text-gray-400 font-mono">
-                Generating 5 modules: PRD, Infrastructure, Budget Tech Stack, Data Architecture & Developer Runbook
+              <h3 className="text-sm font-bold text-foreground">Synthesizing Architecture Blueprint...</h3>
+              <p className="text-[11px] font-mono text-muted-foreground">
+                Google Gemini 3.5 is compiling 5 modules with zero code truncation
               </p>
             </div>
           </div>
 
-          <div className="space-y-3 pt-2">
-            <div className="h-3 bg-gray-800 rounded-full w-3/4"></div>
-            <div className="h-3 bg-gray-800/60 rounded-full w-full"></div>
-            <div className="h-3 bg-gray-800/40 rounded-full w-5/6"></div>
+          <div className="space-y-2 pt-2">
+            <div className="h-2 rounded-full bg-cyan-950 border border-cyan-800/40 overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full w-4/5 animate-pulse" />
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-2">
-            <div className="bg-gray-900 border border-gray-800 p-2.5 rounded-lg flex items-center space-x-2 text-xs text-gray-400">
-              <Cpu className="w-3.5 h-3.5 text-gray-300 shrink-0" />
-              <span>1. PRD & Scope Matrix</span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px] font-mono pt-2">
+            <div className="p-2.5 rounded-lg bg-secondary/80 border border-border flex items-center space-x-2 text-muted-foreground">
+              <Cpu className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span>1. PRD Scope Matrix</span>
             </div>
-            <div className="bg-gray-900 border border-gray-800 p-2.5 rounded-lg flex items-center space-x-2 text-xs text-gray-400">
-              <Layers className="w-3.5 h-3.5 text-gray-300 shrink-0" />
-              <span>2. Traffic Scaling Infra</span>
+            <div className="p-2.5 rounded-lg bg-secondary/80 border border-border flex items-center space-x-2 text-muted-foreground">
+              <Layers className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+              <span>2. Traffic Scaling Specs</span>
             </div>
-            <div className="bg-gray-900 border border-gray-800 p-2.5 rounded-lg flex items-center space-x-2 text-xs text-gray-400">
-              <Database className="w-3.5 h-3.5 text-gray-300 shrink-0" />
-              <span>3. Budget Stack & Costs</span>
+            <div className="p-2.5 rounded-lg bg-secondary/80 border border-border flex items-center space-x-2 text-muted-foreground">
+              <Database className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>3. Cost Table & Stack</span>
             </div>
-            <div className="bg-gray-900 border border-gray-800 p-2.5 rounded-lg flex items-center space-x-2 text-xs text-gray-400">
-              <Layers className="w-3.5 h-3.5 text-gray-300 shrink-0" />
-              <span>4. Data Entities & Graph</span>
+            <div className="p-2.5 rounded-lg bg-secondary/80 border border-border flex items-center space-x-2 text-muted-foreground">
+              <Layers className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+              <span>4. DB ERD & Flowchart</span>
             </div>
-            <div className="bg-gray-900 border border-gray-800 p-2.5 rounded-lg flex items-center space-x-2 text-xs text-gray-400 sm:col-span-2">
-              <Cpu className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+            <div className="p-2.5 rounded-lg bg-secondary/80 border border-border flex items-center space-x-2 text-muted-foreground sm:col-span-2">
+              <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>5. Developer Runbook (4 Phases)</span>
             </div>
           </div>
         </div>
       ) : (
         /* Generative Form Inputs */
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Project Title */}
-          <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1">
-              Project Title <span className="text-gray-500">*</span>
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-foreground">
+              Project Title <span className="text-cyan-400">*</span>
             </label>
             <input
               type="text"
@@ -173,17 +200,40 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
               placeholder="e.g. AI-Powered SaaS Analytics Engine"
               required
               {...secureInputProps}
-              className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-xs focus:outline-none focus:border-gray-600 transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-background/80 border border-border text-foreground text-xs focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/40 transition-all placeholder:text-muted-foreground/60"
             />
           </div>
 
-          {/* Project Idea (Textarea max 1000 chars) */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-semibold text-gray-300">
-                Project Idea & Description <span className="text-gray-500">*</span>
+          {/* Quick Idea Chips */}
+          <div className="space-y-1.5">
+            <div className="flex items-center space-x-1.5 text-[11px] text-muted-foreground">
+              <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
+              <span>Quick Starter Ideas:</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {QUICK_IDEAS.map((idea, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setTitle(idea.title);
+                    setTechStack(idea.tech);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-secondary/70 hover:bg-secondary border border-border/80 text-[11px] text-muted-foreground hover:text-cyan-300 transition-colors cursor-pointer"
+                >
+                  {idea.title}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Project Idea (Textarea) */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-semibold text-foreground">
+                Project Specification & Brief <span className="text-cyan-400">*</span>
               </label>
-              <span className="text-[11px] font-mono text-gray-500">
+              <span className="text-[11px] font-mono text-muted-foreground">
                 {projectIdea.length}/{MAX_IDEA_LENGTH}
               </span>
             </div>
@@ -191,54 +241,71 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
               value={projectIdea}
               onChange={(e) => setProjectIdea(e.target.value.slice(0, MAX_IDEA_LENGTH))}
               rows={4}
-              placeholder="Describe your core product concept, key features, user actions, and business goals..."
+              placeholder="Describe your core product concept, key features, target users, business goals, and special scaling constraints..."
               required
               {...secureInputProps}
-              className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-xs focus:outline-none focus:border-gray-600 transition-colors resize-none"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-background/80 border border-border text-foreground text-xs focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/40 transition-all resize-none placeholder:text-muted-foreground/60"
             />
           </div>
 
-          {/* Grid layout for Budget & Traffic Dropdowns */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Budget Constraints Dropdown */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-300 mb-1">
-                Budget Constraints
-              </label>
-              <select
-                value={budget}
-                onChange={(e) => setBudget(e.target.value)}
-                {...secureInputProps}
-                className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-xs focus:outline-none focus:border-gray-600 transition-colors"
-              >
-                <option value="Low / Bootstrap ($0 - $50/mo)">Low / Bootstrap ($0 - $50/mo)</option>
-                <option value="Moderate Scale ($50 - $500/mo)">Moderate Scale ($50 - $500/mo)</option>
-                <option value="High Enterprise ($500+/mo)">High Enterprise ($500+/mo)</option>
-              </select>
-            </div>
-
-            {/* Expected Traffic Dropdown */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-300 mb-1">
-                Expected Traffic Scale
-              </label>
-              <select
-                value={expectedTraffic}
-                onChange={(e) => setExpectedTraffic(e.target.value)}
-                {...secureInputProps}
-                className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-xs focus:outline-none focus:border-gray-600 transition-colors"
-              >
-                <option value="MVP / Growth (< 10,000 MAU)">MVP / Growth (&lt; 10,000 MAU)</option>
-                <option value="Medium Scale (10,000 - 100,000 MAU)">Medium Scale (10k - 100k MAU)</option>
-                <option value="High Concurrency (100,000+ MAU)">High Concurrency (100k+ MAU)</option>
-              </select>
+          {/* Budget Segmented Selector */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-foreground">
+              Target Budget Tier
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {BUDGET_TIERS.map((tier) => {
+                const isSelected = budget === tier.value;
+                return (
+                  <button
+                    key={tier.value}
+                    type="button"
+                    onClick={() => setBudget(tier.value)}
+                    className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer ${
+                      isSelected
+                        ? "bg-cyan-950/40 border-cyan-500/60 text-cyan-300 ring-1 ring-cyan-500/30"
+                        : "bg-background/60 border-border text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                    }`}
+                  >
+                    <div className="text-xs font-bold">{tier.label}</div>
+                    <div className="text-[10px] text-muted-foreground truncate">{tier.desc}</div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Tech Stack Preferences */}
-          <div>
-            <label className="block text-xs font-semibold text-gray-300 mb-1">
-              Tech Stack Preferences <span className="text-gray-500">(Optional)</span>
+          {/* Traffic Scale Segmented Selector */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-foreground">
+              Expected Traffic Scale
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {TRAFFIC_TIERS.map((tier) => {
+                const isSelected = expectedTraffic === tier.value;
+                return (
+                  <button
+                    key={tier.value}
+                    type="button"
+                    onClick={() => setExpectedTraffic(tier.value)}
+                    className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer ${
+                      isSelected
+                        ? "bg-blue-950/40 border-blue-500/60 text-blue-300 ring-1 ring-blue-500/30"
+                        : "bg-background/60 border-border text-muted-foreground hover:text-foreground hover:bg-secondary/40"
+                    }`}
+                  >
+                    <div className="text-xs font-bold">{tier.label}</div>
+                    <div className="text-[10px] text-muted-foreground truncate">{tier.desc}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Tech Stack Preferences (Optional) */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-semibold text-foreground">
+              Tech Stack Preferences <span className="text-muted-foreground font-normal">(Optional)</span>
             </label>
             <input
               type="text"
@@ -246,17 +313,17 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
               onChange={(e) => setTechStack(e.target.value)}
               placeholder="e.g. FastAPI, Next.js, Neon PostgreSQL, Redis, Tailwind"
               {...secureInputProps}
-              className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-xs focus:outline-none focus:border-gray-600 transition-colors"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-background/80 border border-border text-foreground text-xs focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/40 transition-all placeholder:text-muted-foreground/60"
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Submit Action Button */}
           <button
             type="submit"
-            className="w-full py-2.5 px-4 rounded-lg bg-gray-100 text-gray-950 font-semibold text-xs hover:bg-gray-300 transition-colors shadow-lg flex items-center justify-center space-x-2"
+            className="w-full py-3 px-4 rounded-xl font-bold text-xs text-primary-foreground bg-gradient-to-r from-cyan-400 via-cyan-500 to-blue-600 hover:from-cyan-300 hover:to-blue-500 shadow-cyan-glow transition-all hover:scale-[1.01] flex items-center justify-center space-x-2 cursor-pointer"
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Generate Architecture Blueprint</span>
+            <Sparkles className="w-4 h-4" />
+            <span>Synthesize Master Architecture Blueprint</span>
           </button>
         </form>
       )}

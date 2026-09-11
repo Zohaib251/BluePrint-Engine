@@ -629,25 +629,25 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
   };
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-8 shadow-2xl">
+    <div className="bg-card/95 backdrop-blur-xl border border-border/80 rounded-2xl p-6 sm:p-8 space-y-8 shadow-2xl shadow-black/40">
       {/* Header Actions Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-5">
         <div>
           <div className="flex items-center space-x-2.5 mb-1">
-            <h2 className="text-xl font-bold text-gray-100">{parsedContent?.title || prd.title}</h2>
-            <span className="text-[10px] font-mono uppercase bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-2 py-0.5 rounded font-semibold tracking-wider">
+            <h2 className="text-xl font-bold text-foreground">{parsedContent?.title || prd.title}</h2>
+            <span className="text-[10px] font-mono uppercase bg-primary/10 text-primary border border-primary/30 px-2.5 py-0.5 rounded-full font-semibold tracking-wider">
               Master Blueprint
             </span>
           </div>
-          <p className="text-xs text-gray-400 font-mono">
-            ID: <span className="text-gray-300">{prd.id.substring(0, 8)}</span> &bull; Generated: {new Date(prd.created_at).toLocaleDateString()} &bull; Code-Free Specifications
+          <p className="text-xs text-muted-foreground font-mono">
+            ID: <span className="text-foreground">{prd.id.substring(0, 8)}</span> &bull; Generated: {new Date(prd.created_at).toLocaleDateString()} &bull; Code-Free Specifications
           </p>
         </div>
 
         <div className="flex items-center space-x-2 shrink-0">
           <button
             onClick={handleCopyMarkdown}
-            className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-gray-800 text-gray-200 text-xs font-semibold hover:bg-gray-700 transition-colors border border-gray-700"
+            className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-secondary/80 text-foreground text-xs font-semibold hover:bg-secondary hover:text-white transition-all border border-border"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? "Copied" : "Copy MD"}</span>
@@ -655,7 +655,7 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
 
           <button
             onClick={handleDownloadMarkdown}
-            className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-gray-800 text-gray-200 text-xs font-semibold hover:bg-gray-700 transition-colors border border-gray-700"
+            className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-secondary/80 text-foreground text-xs font-semibold hover:bg-secondary hover:text-white transition-all border border-border"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Download MD</span>
@@ -664,7 +664,7 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
           <button
             onClick={handleDownloadPDF}
             disabled={isExportingPdf}
-            className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-lg bg-gray-100 text-gray-950 text-xs font-bold hover:bg-gray-300 transition-colors shadow disabled:opacity-50"
+            className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-all shadow-sm shadow-primary/20 disabled:opacity-50"
           >
             {isExportingPdf ? (
               <>
@@ -682,7 +682,7 @@ export default function PRDViewer({ prd, onClose }: PRDViewerProps) {
           {onClose && (
             <button
               onClick={onClose}
-              className="p-2 rounded-lg bg-gray-800 text-gray-400 hover:text-gray-100 transition-colors border border-gray-700"
+              className="p-2 rounded-lg bg-secondary/80 text-muted-foreground hover:text-foreground transition-colors border border-border"
             >
               <X className="w-4 h-4" />
             </button>
