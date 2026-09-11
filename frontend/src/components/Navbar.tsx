@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -13,17 +13,41 @@ import {
   LogOut, 
   ChevronRight, 
   User as UserIcon,
-  Cpu
+  Cpu,
+  Sun,
+  Moon
 } from "lucide-react";
 
 /**
  * Shadcn-styled Header Navigation Block.
- * Features glassmorphism, glowing brand marks, route indicators, and user quota preview.
+ * Features glassmorphism, glowing brand marks, route indicators, user quota preview,
+ * and live Claude Blu 2 Light/Dark theme switcher.
  */
 export default function Navbar() {
   const pathname = usePathname();
   const { user, isAdmin, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsDarkMode(document.documentElement.classList.contains("dark"));
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    if (typeof window === "undefined") return;
+    const currentlyDark = document.documentElement.classList.contains("dark");
+    if (currentlyDark) {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("blueprint_theme", "light");
+      setIsDarkMode(false);
+    } else {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("blueprint_theme", "dark");
+      setIsDarkMode(true);
+    }
+  };
 
   const navLinks = [
     { name: "Overview", href: "/" },
@@ -78,6 +102,16 @@ export default function Navbar() {
 
         {/* User Authentication & Action CTA Block */}
         <div className="hidden md:flex items-center space-x-3">
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            title={isDarkMode ? "Switch to Claude Blu 2 Light Mode" : "Switch to Claude Blu 2 Dark Mode"}
+            className="p-2 rounded-xl bg-secondary/70 text-foreground hover:bg-secondary border border-border transition-all cursor-pointer"
+            aria-label="Toggle theme mode"
+          >
+            {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-primary" />}
+          </button>
+
           {user ? (
             <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-2 px-3 py-1 rounded-lg bg-card/80 border border-border/80 text-xs">
@@ -121,8 +155,17 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile Hamburger Toggle */}
-        <div className="md:hidden flex items-center">
+        {/* Mobile Hamburger & Theme Toggle */}
+        <div className="md:hidden flex items-center space-x-2">
+          <button
+            onClick={toggleTheme}
+            title={isDarkMode ? "Switch to Claude Blu 2 Light Mode" : "Switch to Claude Blu 2 Dark Mode"}
+            className="p-2 rounded-lg bg-secondary text-foreground hover:bg-secondary/80 border border-border transition-all cursor-pointer"
+            aria-label="Toggle theme mode"
+          >
+            {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-primary" />}
+          </button>
+
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 rounded-lg bg-secondary text-muted-foreground hover:text-foreground border border-border transition-colors"
