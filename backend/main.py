@@ -1,11 +1,13 @@
 """
 Blueprint Engine API Application.
 
-FastAPI backend service serving core API endpoints, JWT authentication, rate-limiting, and PRD history CRUD.
+FastAPI backend service serving core API endpoints, JWT authentication, rate-limiting,
+PRD history CRUD, and background 30-day data pruning tasks.
 Requires Python 3.10+ and virtual environment execution.
 """
 
 import os
+import asyncio
 from contextlib import asynccontextmanager
 from typing import Dict, AsyncGenerator
 from fastapi import FastAPI
@@ -16,6 +18,7 @@ from dotenv import load_dotenv
 
 from init_db import init_db
 from limiter import limiter
+from pruning import start_pruning_background_loop
 from routers.auth import router as auth_router
 from routers.prd import router as prd_router
 
@@ -28,10 +31,23 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """
     Application lifespan context manager for startup and shutdown events.
 
-    Runs database initialization and default admin seeding on application boot.
+    Runs database initialization, seeds default admin, and launches the
+    background automated 30-day data pruning service task.
     """
+    # Initialize DB schema and admin user
     await init_db()
+
+    # Launch automated background pruning task (Runs every 24 hours)
+    prune_task = asyncio.create_task(start_pruning_background_loop(interval_hours=24))
+
     yield
+
+    # Cancel background pruning task on application shutdown
+    prune_task.cancel()
+    try:
+        await prune_task
+    except asyncio.CancelledError:
+        pass
 
 
 # Initialize FastAPI Application instance with lifespan hook
