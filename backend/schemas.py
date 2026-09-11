@@ -4,10 +4,11 @@ Pydantic Data Schemas Module.
 Provides request validation models and response serializers for Auth, PRD CRUD, Admin Analytics, and Gemini AI Structured Outputs.
 """
 
+import re
 from datetime import datetime
 from uuid import UUID
 from typing import Optional, List
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class UserCreate(BaseModel):
@@ -19,6 +20,21 @@ class UserCreate(BaseModel):
     password: str = Field(
         ..., min_length=6, max_length=100, description="Plain text account password"
     )
+
+    @field_validator("username")
+    @classmethod
+    def validate_username(cls, v: str) -> str:
+        clean = v.strip()
+        if not re.match(r"^[a-zA-Z0-9_-]+$", clean):
+            raise ValueError("Username may only contain letters, numbers, underscores, and hyphens.")
+        return clean
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: str) -> str:
+        if len(v.strip()) < 6:
+            raise ValueError("Password must contain at least 6 non-whitespace characters.")
+        return v
 
 
 class UserLogin(BaseModel):
@@ -84,7 +100,7 @@ class ProjectBriefRequest(BaseModel):
         ..., min_length=3, max_length=255, description="Target application or feature title"
     )
     brief: str = Field(
-        ..., min_length=10, description="Project specification, requirements, and functional brief"
+        ..., min_length=10, max_length=5000, description="Project specification, requirements, and functional brief"
     )
     price_range: Optional[str] = Field(
         default="Low / Bootstrap ($0 - $50/mo)",
@@ -94,6 +110,24 @@ class ProjectBriefRequest(BaseModel):
         default="MVP / Growth (< 10,000 MAU)",
         description="Expected Traffic Range",
     )
+
+    @field_validator("title")
+    @classmethod
+    def sanitize_title(cls, v: str) -> str:
+        clean = v.strip().replace("\x00", "")
+        clean = re.sub(r"<[^>]*>", "", clean)
+        if len(clean) < 3:
+            raise ValueError("Title must be at least 3 characters after sanitization.")
+        return clean
+
+    @field_validator("brief")
+    @classmethod
+    def sanitize_brief(cls, v: str) -> str:
+        clean = v.strip().replace("\x00", "")
+        clean = re.sub(r"<script.*?>.*?</script>", "", clean, flags=re.IGNORECASE | re.DOTALL)
+        if len(clean) < 10:
+            raise ValueError("Brief must be at least 10 characters after sanitization.")
+        return clean
 
 
 class DatabaseTableColumn(BaseModel):

@@ -30,11 +30,22 @@ async def init_db() -> None:
 
     async with AsyncSessionLocal() as session:
         try:
-            # Ensure default admin accounts 'ZohaibAli' and 'admin' exist with admin role
-            admin_credentials = [
-                ("ZohaibAli", "hellfire123"),
-                ("admin", "admin123"),
-            ]
+            # Retrieve admin credentials from environment or secure defaults
+            import os
+            from config import ENVIRONMENT
+
+            primary_admin_user = os.getenv("ADMIN_USERNAME", "ZohaibAli")
+            primary_admin_pass = os.getenv("ADMIN_PASSWORD", "hellfire123")
+
+            admin_credentials = [(primary_admin_user, primary_admin_pass)]
+
+            # In development only, allow optional secondary dev admin if explicitly configured
+            if ENVIRONMENT.lower() != "production":
+                dev_admin_user = os.getenv("DEV_ADMIN_USERNAME")
+                dev_admin_pass = os.getenv("DEV_ADMIN_PASSWORD")
+                if dev_admin_user and dev_admin_pass:
+                    admin_credentials.append((dev_admin_user, dev_admin_pass))
+
             for username, default_pw in admin_credentials:
                 stmt = select(User).where(User.username == username)
                 result = await session.execute(stmt)

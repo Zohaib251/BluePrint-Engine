@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { generatePRD, PRDHistory } from "@/lib/api";
-import { Sparkles, Loader2, AlertCircle, Layers, Database, Cpu } from "lucide-react";
+import { Sparkles, Loader2, AlertCircle, Layers, Database, Cpu, ShieldCheck } from "lucide-react";
+import { secureInputProps } from "@/components/SecurityProvider";
 
 interface PRDGeneratorFormProps {
   onSuccess: (newPrd: PRDHistory) => void;
@@ -88,9 +89,15 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
           <Sparkles className="w-4 h-4 text-gray-300" />
           <span>Master Architecture Blueprint</span>
         </h2>
-        <span className="text-[11px] font-mono bg-gray-800 text-gray-300 px-2.5 py-1 rounded border border-gray-700">
-          5-MODULE ARCHITECT
-        </span>
+        <div className="flex items-center space-x-2">
+          <span className="text-[10px] font-mono bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 px-2 py-0.5 rounded flex items-center space-x-1">
+            <ShieldCheck className="w-3 h-3" />
+            <span>ANTI-TAMPER</span>
+          </span>
+          <span className="text-[11px] font-mono bg-gray-800 text-gray-300 px-2.5 py-1 rounded border border-gray-700">
+            5-MODULE ARCHITECT
+          </span>
+        </div>
       </div>
 
       {error && (
@@ -165,6 +172,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. AI-Powered SaaS Analytics Engine"
               required
+              {...secureInputProps}
               className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-xs focus:outline-none focus:border-gray-600 transition-colors"
             />
           </div>
@@ -185,6 +193,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
               rows={4}
               placeholder="Describe your core product concept, key features, user actions, and business goals..."
               required
+              {...secureInputProps}
               className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-xs focus:outline-none focus:border-gray-600 transition-colors resize-none"
             />
           </div>
@@ -199,6 +208,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
               <select
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
+                {...secureInputProps}
                 className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-xs focus:outline-none focus:border-gray-600 transition-colors"
               >
                 <option value="Low / Bootstrap ($0 - $50/mo)">Low / Bootstrap ($0 - $50/mo)</option>
@@ -215,6 +225,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
               <select
                 value={expectedTraffic}
                 onChange={(e) => setExpectedTraffic(e.target.value)}
+                {...secureInputProps}
                 className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-xs focus:outline-none focus:border-gray-600 transition-colors"
               >
                 <option value="MVP / Growth (< 10,000 MAU)">MVP / Growth (&lt; 10,000 MAU)</option>
@@ -234,6 +245,7 @@ ${techStack.trim() || "No strict preference (select optimal architecture)"}
               value={techStack}
               onChange={(e) => setTechStack(e.target.value)}
               placeholder="e.g. FastAPI, Next.js, Neon PostgreSQL, Redis, Tailwind"
+              {...secureInputProps}
               className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-xs focus:outline-none focus:border-gray-600 transition-colors"
             />
           </div>

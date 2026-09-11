@@ -12,15 +12,7 @@ import jwt
 import bcrypt
 from dotenv import load_dotenv
 
-# Ensure environment variables are loaded
-load_dotenv()
-
-# Retrieve JWT secret configuration strictly from environment
-JWT_SECRET_KEY = os.getenv(
-    "JWT_SECRET_KEY", "fallback_dev_secret_key_change_me_in_production_32b"
-)
-JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
+from config import JWT_SECRET_KEY, JWT_ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 def hash_password(password: str) -> str:

@@ -31,11 +31,11 @@ export default function MermaidRenderer({ chart }: MermaidRendererProps) {
       cleanedChart = `graph TD\n${cleanedChart}`;
     }
 
-    // Initialize Mermaid configuration for high-contrast dark theme
+    // Initialize Mermaid configuration for high-contrast dark theme with strict XSS protection
     mermaid.initialize({
       startOnLoad: false,
       theme: "dark",
-      securityLevel: "loose",
+      securityLevel: "strict",
       fontFamily: "var(--font-poppins)",
     });
 

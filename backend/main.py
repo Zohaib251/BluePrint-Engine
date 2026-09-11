@@ -55,9 +55,34 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request as StarletteRequest
+from starlette.responses import Response as StarletteResponse
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """
+    Middleware injecting strict HTTP security headers protecting against XSS,
+    clickjacking, MIME sniffing, and enforcing HSTS.
+    """
+
+    async def dispatch(self, request: StarletteRequest, call_next):
+        response: StarletteResponse = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+        return response
+
+
 # Attach SlowAPI Rate Limiter state and error handler
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# Attach Security Headers Middleware
+app.add_middleware(SecurityHeadersMiddleware)
 
 # Attach Cross-Origin Resource Sharing (CORS) Middleware from centralized config
 app.add_middleware(
@@ -88,3 +113,10 @@ async def health_check() -> Dict[str, str]:
         "environment": ENVIRONMENT,
         "cors_origins": CORS_ORIGINS,
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    from config import PORT
+    uvicorn.run("main:app", host="0.0.0.0", port=PORT, reload=(ENVIRONMENT.lower() != "production"))
+

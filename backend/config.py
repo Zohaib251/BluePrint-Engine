@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 # Ensure environment variables are loaded
 load_dotenv()
 
+import secrets
+
 # Deployment environment identifier
 ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
 
@@ -19,9 +21,9 @@ ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
 PORT: int = int(os.getenv("PORT", "8000"))
 
 # Cross-Origin Resource Sharing (CORS) Configuration
-# Explicitly authorizes localhost development and placeholder deployed Next.js domain
 DEFAULT_ALLOWED_ORIGINS: str = (
     "http://localhost:3000,"
+    "http://127.0.0.1:3000,"
     "https://blueprint-engine-frontend.onrender.com"
 )
 RAW_CORS: str = os.getenv("CORS_ORIGINS", DEFAULT_ALLOWED_ORIGINS)
@@ -40,9 +42,14 @@ if "sslmode=" in DATABASE_URL:
     DATABASE_URL = DATABASE_URL.replace("sslmode=", "ssl=")
 
 # JWT Authentication Security Configuration
-JWT_SECRET_KEY: str = os.getenv(
-    "JWT_SECRET_KEY", "fallback_dev_secret_key_change_me_in_production_32b"
-)
+JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "")
+if not JWT_SECRET_KEY:
+    if ENVIRONMENT.lower() == "production":
+        # Generate cryptographically secure secret key if none provided in production
+        JWT_SECRET_KEY = secrets.token_urlsafe(32)
+    else:
+        JWT_SECRET_KEY = "fallback_dev_secret_key_change_me_in_production_32b"
+
 JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 

@@ -5,10 +5,11 @@ Provides endpoints for generating PRDs via Gemini 1.5 Flash, reading, listing, a
 Enforces monthly generation quotas for standard users (5/month) while explicitly bypassing quotas for admins.
 """
 
+import logging
 from uuid import UUID
 from typing import List
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,11 +17,14 @@ from database import get_db
 from models import User, PRDHistory
 from schemas import PRDCreate, PRDResponse, ProjectBriefRequest
 from auth import get_current_user
+from limiter import limiter
 from ai_service import (
     generate_prd_from_brief,
     GeminiRateLimitException,
     GeminiContentFilterException,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/prd", tags=["PRD Management"])
 
@@ -29,7 +33,9 @@ STANDARD_USER_MONTHLY_QUOTA = 5
 
 
 @router.post("/generate", response_model=PRDResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("10/minute")
 async def generate_and_save_prd(
+    request: Request,
     brief_data: ProjectBriefRequest,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -88,9 +94,16 @@ async def generate_and_save_prd(
                 status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                 detail="AI generation is currently experiencing high demand. Please try again in 1 minute.",
             )
+        logger.error(f"Value error in PRD generation: {err}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(err),
+            detail="An error occurred during AI blueprint synthesis. Please retry or contact support.",
+        )
+    except Exception as err:
+        logger.error(f"Unexpected error in PRD generation: {err}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An internal server error occurred while processing the blueprint request.",
         )
 
     # Serialize validated Pydantic model to JSON string for database storage
@@ -114,7 +127,9 @@ async def generate_and_save_prd(
 
 
 @router.post("", response_model=PRDResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("20/minute")
 async def create_prd_history(
+    request: Request,
     prd_data: PRDCreate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),

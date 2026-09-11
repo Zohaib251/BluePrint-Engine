@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signupUser, signinUser } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { secureInputProps } from "@/components/SecurityProvider";
 
 /**
  * Sign Up Page Component with client-side form validation.
@@ -82,6 +83,7 @@ export default function SignUpPage() {
               onChange={(e) => setUsername(e.target.value)}
               placeholder="e.g. alex_architect"
               required
+              {...secureInputProps}
               className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-sm focus:outline-none focus:border-gray-600 transition-colors"
             />
           </div>
@@ -96,6 +98,7 @@ export default function SignUpPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 6 characters"
               required
+              {...secureInputProps}
               className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-sm focus:outline-none focus:border-gray-600 transition-colors"
             />
           </div>
@@ -110,6 +113,7 @@ export default function SignUpPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Re-enter password"
               required
+              {...secureInputProps}
               className="w-full px-3.5 py-2 rounded-lg bg-gray-950 border border-gray-800 text-gray-100 text-sm focus:outline-none focus:border-gray-600 transition-colors"
             />
           </div>
