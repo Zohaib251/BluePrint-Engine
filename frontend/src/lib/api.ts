@@ -108,7 +108,7 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
 /**
  * Sign up a new user account.
  */
-export async function signupUser(username: string, password: str) {
+export async function signupUser(username: string, password: string) {
   return fetchWithAuth("/api/auth/signup", {
     method: "POST",
     body: JSON.stringify({ username, password }),
@@ -118,7 +118,7 @@ export async function signupUser(username: string, password: str) {
 /**
  * Sign in user and receive JWT access token.
  */
-export async function signinUser(username: string, password: str) {
+export async function signinUser(username: string, password: string) {
   const res = await fetchWithAuth("/api/auth/signin", {
     method: "POST",
     body: JSON.stringify({ username, password }),

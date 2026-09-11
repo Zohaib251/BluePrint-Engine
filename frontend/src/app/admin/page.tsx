@@ -30,7 +30,7 @@ export default function AdminPage() {
       setAnalytics(data);
     } catch (err: any) {
       setError(err.message || "Failed to fetch platform analytics.");
-    } font-mono {
+    } finally {
       setIsFetchingAnalytics(false);
     }
   }, []);
